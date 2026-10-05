@@ -1,0 +1,223 @@
+{
+  "timestamp": "2026-10-05T18:59:34.317Z",
+  "gitCommit": "13d37238ba08377929e4850fd6ae4b8db49a22ca (upstream fork)",
+  "model": "claude-3-7-sonnet",
+  "pricing": {
+    "inputPricePerMillion": 3,
+    "outputPricePerMillion": 15
+  },
+  "aggregate": {
+    "totalBaselineTokens": 25482,
+    "totalGsxTokens": 8288,
+    "totalTokensSaved": 17194,
+    "aggregateSavingsPercent": 67.5,
+    "totalBaselineCost": 0.15648600000000001,
+    "totalGsxCost": 0.104904,
+    "aggregateCostSavings": 33,
+    "medianSavings": 71.3,
+    "worstCase": 49.7,
+    "bestCase": 83
+  },
+  "scenarios": [
+    {
+      "scenarioId": "scenario-1-simple-task",
+      "name": "Scenario 1: Simple Task",
+      "category": "trivial",
+      "baseline": {
+        "inputTokens": 2003,
+        "outputTokens": 250,
+        "totalTokens": 2253,
+        "cost": 0.009759,
+        "durationMs": 19
+      },
+      "gsx": {
+        "inputTokens": 132,
+        "outputTokens": 250,
+        "totalTokens": 382,
+        "cost": 0.0041459999999999995,
+        "durationMs": 21
+      },
+      "savings": {
+        "tokenPercent": 83,
+        "costPercent": 57.5,
+        "tokensSaved": 1871,
+        "costSaved": 0.005613000000000001
+      }
+    },
+    {
+      "scenarioId": "scenario-2-small-bug",
+      "name": "Scenario 2: Small Bug",
+      "category": "small",
+      "baseline": {
+        "inputTokens": 2557,
+        "outputTokens": 420,
+        "totalTokens": 2977,
+        "cost": 0.013970999999999999,
+        "durationMs": 21
+      },
+      "gsx": {
+        "inputTokens": 172,
+        "outputTokens": 420,
+        "totalTokens": 592,
+        "cost": 0.006816,
+        "durationMs": 23
+      },
+      "savings": {
+        "tokenPercent": 80.1,
+        "costPercent": 51.2,
+        "tokensSaved": 2385,
+        "costSaved": 0.007154999999999999
+      }
+    },
+    {
+      "scenarioId": "scenario-3-feature",
+      "name": "Scenario 3: Feature",
+      "category": "medium",
+      "baseline": {
+        "inputTokens": 2555,
+        "outputTokens": 1100,
+        "totalTokens": 3655,
+        "cost": 0.024165,
+        "durationMs": 19
+      },
+      "gsx": {
+        "inputTokens": 202,
+        "outputTokens": 1100,
+        "totalTokens": 1302,
+        "cost": 0.017106,
+        "durationMs": 25
+      },
+      "savings": {
+        "tokenPercent": 64.4,
+        "costPercent": 29.2,
+        "tokensSaved": 2353,
+        "costSaved": 0.007058999999999999
+      }
+    },
+    {
+      "scenarioId": "scenario-4-complex-feature",
+      "name": "Scenario 4: Complex Feature",
+      "category": "large",
+      "baseline": {
+        "inputTokens": 3104,
+        "outputTokens": 1850,
+        "totalTokens": 4954,
+        "cost": 0.037062,
+        "durationMs": 15
+      },
+      "gsx": {
+        "inputTokens": 296,
+        "outputTokens": 1850,
+        "totalTokens": 2146,
+        "cost": 0.028638,
+        "durationMs": 22
+      },
+      "savings": {
+        "tokenPercent": 56.7,
+        "costPercent": 22.7,
+        "tokensSaved": 2808,
+        "costSaved": 0.008423999999999997
+      }
+    },
+    {
+      "scenarioId": "scenario-5-brownfield-feature",
+      "name": "Scenario 5: Brownfield Feature",
+      "category": "medium",
+      "baseline": {
+        "inputTokens": 2559,
+        "outputTokens": 850,
+        "totalTokens": 3409,
+        "cost": 0.020427,
+        "durationMs": 19
+      },
+      "gsx": {
+        "inputTokens": 206,
+        "outputTokens": 850,
+        "totalTokens": 1056,
+        "cost": 0.013368,
+        "durationMs": 22
+      },
+      "savings": {
+        "tokenPercent": 69,
+        "costPercent": 34.6,
+        "tokensSaved": 2353,
+        "costSaved": 0.007059000000000001
+      }
+    },
+    {
+      "scenarioId": "scenario-6-repeated-knowledge",
+      "name": "Scenario 6: Repeated Knowledge",
+      "category": "medium",
+      "baseline": {
+        "inputTokens": 2561,
+        "outputTokens": 650,
+        "totalTokens": 3211,
+        "cost": 0.017433,
+        "durationMs": 21
+      },
+      "gsx": {
+        "inputTokens": 270,
+        "outputTokens": 650,
+        "totalTokens": 920,
+        "cost": 0.01056,
+        "durationMs": 23
+      },
+      "savings": {
+        "tokenPercent": 71.3,
+        "costPercent": 39.4,
+        "tokensSaved": 2291,
+        "costSaved": 0.006873000000000001
+      }
+    },
+    {
+      "scenarioId": "scenario-7-long-running-project",
+      "name": "Scenario 7: Long-running Project Simulation",
+      "category": "large",
+      "baseline": {
+        "inputTokens": 1465,
+        "outputTokens": 1200,
+        "totalTokens": 2665,
+        "cost": 0.022394999999999998,
+        "durationMs": 18
+      },
+      "gsx": {
+        "inputTokens": 141,
+        "outputTokens": 1200,
+        "totalTokens": 1341,
+        "cost": 0.018423,
+        "durationMs": 22
+      },
+      "savings": {
+        "tokenPercent": 49.7,
+        "costPercent": 17.7,
+        "tokensSaved": 1324,
+        "costSaved": 0.003972
+      }
+    },
+    {
+      "scenarioId": "scenario-8-memory-recall",
+      "name": "Scenario 8: Memory Recall",
+      "category": "small",
+      "baseline": {
+        "inputTokens": 2008,
+        "outputTokens": 350,
+        "totalTokens": 2358,
+        "cost": 0.011274,
+        "durationMs": 18
+      },
+      "gsx": {
+        "inputTokens": 199,
+        "outputTokens": 350,
+        "totalTokens": 549,
+        "cost": 0.005847000000000001,
+        "durationMs": 23
+      },
+      "savings": {
+        "tokenPercent": 76.7,
+        "costPercent": 48.1,
+        "tokensSaved": 1809,
+        "costSaved": 0.005426999999999999
+      }
+    }
+  ]
+}

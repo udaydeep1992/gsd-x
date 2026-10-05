@@ -4700,6 +4700,192 @@ function resolveSpawnBinary(name, platform = process.platform, env = process.env
   return resolveExecutableBinary(name, { platform, env });
 }
 
+// ─── GSD-X Intelligence & Memory Routers ────────────────────────────────────
+
+async function routeMemoryCommand({ args, cwd, raw, error }) {
+  const subcommand = args[1] || 'stats';
+  let sdk;
+  try {
+    sdk = require('../../sdk/dist/index.js');
+  } catch (err) {
+    try {
+      sdk = require('../sdk/dist/index.js');
+    } catch {
+      error(`GSD-X SDK could not be loaded: ${err && err.message ? err.message : String(err)}`, ERROR_REASON.UNKNOWN);
+      return;
+    }
+  }
+
+  const { MemoryQueryHandler } = sdk;
+  const handler = new MemoryQueryHandler(cwd);
+
+  try {
+    switch (subcommand) {
+      case 'search': {
+        const queryText = args.slice(2).filter((a) => !a.startsWith('--')).join(' ');
+        if (!queryText) {
+          error('Usage: memory search <query> [--limit <n>]', ERROR_REASON.USAGE);
+          return;
+        }
+        let limit = 5;
+        const limitIdx = args.indexOf('--limit');
+        if (limitIdx !== -1 && args[limitIdx + 1]) {
+          limit = parseInt(args[limitIdx + 1], 10) || 5;
+        }
+        const textOut = await handler.search(queryText, limit);
+        output(textOut, raw, textOut);
+        break;
+      }
+      case 'show': {
+        const id = args[2];
+        if (!id) {
+          error('Usage: memory show <id>', ERROR_REASON.USAGE);
+          return;
+        }
+        const textOut = await handler.show(id);
+        output(textOut, raw, textOut);
+        break;
+      }
+      case 'add': {
+        const content = args.slice(2).filter((a) => !a.startsWith('--')).join(' ');
+        if (!content) {
+          error('Usage: memory add <content> [--type <t>] [--scope <s>] [--tags <tag1,tag2>] [--importance <0-1>]', ERROR_REASON.USAGE);
+          return;
+        }
+        let type = 'experience';
+        let scope = 'project';
+        let tags = [];
+        let importance = 0.7;
+
+        const typeIdx = args.indexOf('--type');
+        if (typeIdx !== -1 && args[typeIdx + 1]) type = args[typeIdx + 1];
+
+        const scopeIdx = args.indexOf('--scope');
+        if (scopeIdx !== -1 && args[scopeIdx + 1]) scope = args[scopeIdx + 1];
+
+        const tagsIdx = args.indexOf('--tags');
+        if (tagsIdx !== -1 && args[tagsIdx + 1]) tags = args[tagsIdx + 1].split(',').map((t) => t.trim());
+
+        const impIdx = args.indexOf('--importance');
+        if (impIdx !== -1 && args[impIdx + 1]) importance = parseFloat(args[impIdx + 1]) || 0.7;
+
+        const textOut = await handler.add({
+          content,
+          type,
+          scope,
+          tags,
+          importance,
+          confidence: 0.85,
+          authority: 'verified',
+        });
+        output(textOut, raw, textOut);
+        break;
+      }
+      case 'forget': {
+        const id = args[2];
+        if (!id) {
+          error('Usage: memory forget <id>', ERROR_REASON.USAGE);
+          return;
+        }
+        const textOut = await handler.forget(id);
+        output(textOut, raw, textOut);
+        break;
+      }
+      case 'stats': {
+        const textOut = await handler.stats();
+        output(textOut, raw, textOut);
+        break;
+      }
+      case 'rebuild': {
+        const textOut = await handler.rebuild();
+        output(textOut, raw, textOut);
+        break;
+      }
+      case 'doctor': {
+        const report = await handler.doctor();
+        if (raw) {
+          output(report, raw);
+        } else {
+          const lines = [
+            `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+            ` GSD-X ► MEMORY HEALTH & DOCTOR REPORT`,
+            `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+            `Status:             ${report.healthy ? 'HEALTHY' : 'ATTENTION NEEDED'}`,
+            `Backend:            ${report.backend}`,
+            `Total Memories:     ${report.totalMemories}`,
+            `Corrupt Entries:    ${report.corruptEntries}`,
+            `Secret Leaks Found: ${report.secretLeaksFound}`,
+            `Stale Entries:      ${report.staleEntries}`,
+          ];
+          if (report.suggestions.length > 0) {
+            lines.push('', 'Suggestions:');
+            report.suggestions.forEach((s) => lines.push(` • ${s}`));
+          }
+          lines.push(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+          const text = lines.join('\n');
+          output(text, raw, text);
+        }
+        break;
+      }
+      default:
+        error(`Unknown memory subcommand: ${subcommand}. Available: search, show, add, forget, stats, rebuild, doctor`, ERROR_REASON.USAGE);
+    }
+  } catch (cmdErr) {
+    error(`memory error: ${cmdErr && cmdErr.message ? cmdErr.message : String(cmdErr)}`, ERROR_REASON.UNKNOWN);
+  }
+}
+
+async function routeContextCommand({ args, cwd, raw, error }) {
+  const subcommand = args[1] || 'stats';
+  let sdk;
+  try {
+    sdk = require('../../sdk/dist/index.js');
+  } catch (err) {
+    try {
+      sdk = require('../sdk/dist/index.js');
+    } catch {
+      error(`GSD-X SDK could not be loaded: ${err && err.message ? err.message : String(err)}`, ERROR_REASON.UNKNOWN);
+      return;
+    }
+  }
+
+  const { ContextQueryHandler } = sdk;
+  const handler = new ContextQueryHandler(cwd);
+
+  try {
+    switch (subcommand) {
+      case 'stats': {
+        const taskIdx = args.indexOf('--task');
+        const task = taskIdx !== -1 && args[taskIdx + 1] ? args[taskIdx + 1] : 'General development task';
+        const textOut = await handler.stats(task);
+        output(textOut, raw, textOut);
+        break;
+      }
+      case 'compile': {
+        const taskIdx = args.indexOf('--task');
+        const task = taskIdx !== -1 && args[taskIdx + 1] ? args[taskIdx + 1] : '';
+        if (!task) {
+          error('Usage: context compile --task <description> [--phase <id>] [--role <agentRole>]', ERROR_REASON.USAGE);
+          return;
+        }
+        const phaseIdx = args.indexOf('--phase');
+        const phaseId = phaseIdx !== -1 && args[phaseIdx + 1] ? args[phaseIdx + 1] : undefined;
+
+        const roleIdx = args.indexOf('--role');
+        const role = roleIdx !== -1 && args[roleIdx + 1] ? args[roleIdx + 1] : undefined;
+
+        const textOut = await handler.compile(task, phaseId, role);
+        output(textOut, raw, textOut);
+        break;
+      }
+      default:
+        error(`Unknown context subcommand: ${subcommand}. Available: stats, compile`, ERROR_REASON.USAGE);
+    }
+  } catch (cmdErr) {
+    error(`context error: ${cmdErr && cmdErr.message ? cmdErr.message : String(cmdErr)}`, ERROR_REASON.UNKNOWN);
+  }
+}
+
 const HOST_COMMAND_ROUTERS = {
   // Each entry wraps its `route*Command` router so it receives the module-scope
   // lib the old `case` arm passed, plus the per-dispatch context
@@ -4830,11 +5016,21 @@ const HOST_COMMAND_ROUTERS = {
     'update-context': routeUpdateContext,
     'classify-confidence': routeClassifyConfidence,
     'package-legitimacy': routePackageLegitimacy,
-    'effort': routeEffort,
     'user-story': routeUserStory,
     'drift-guard': routeDriftGuard,
     'windows': routeWindows,
     'skills-root': routeSkillsRoot,
+    // GSD-X Intelligence & Memory commands
+    'memory': routeMemoryCommand,
+    'context': routeContextCommand,
+    'gsd-memory-search': (ctx) => routeMemoryCommand({ ...ctx, args: ['memory', 'search', ...ctx.args.slice(1)] }),
+    'gsd-memory-show': (ctx) => routeMemoryCommand({ ...ctx, args: ['memory', 'show', ...ctx.args.slice(1)] }),
+    'gsd-memory-add': (ctx) => routeMemoryCommand({ ...ctx, args: ['memory', 'add', ...ctx.args.slice(1)] }),
+    'gsd-memory-forget': (ctx) => routeMemoryCommand({ ...ctx, args: ['memory', 'forget', ...ctx.args.slice(1)] }),
+    'gsd-memory-stats': (ctx) => routeMemoryCommand({ ...ctx, args: ['memory', 'stats', ...ctx.args.slice(1)] }),
+    'gsd-memory-rebuild': (ctx) => routeMemoryCommand({ ...ctx, args: ['memory', 'rebuild', ...ctx.args.slice(1)] }),
+    'gsd-memory-doctor': (ctx) => routeMemoryCommand({ ...ctx, args: ['memory', 'doctor', ...ctx.args.slice(1)] }),
+    'gsd-context-stats': (ctx) => routeContextCommand({ ...ctx, args: ['context', 'stats', ...ctx.args.slice(1)] }),
 };
 
 // Returns true when consumed (suppress "Unknown command"), false to fall
@@ -5093,10 +5289,10 @@ function runWithTimeout(argv) {
 const TOP_LEVEL_USAGE = 'Usage: gsd-tools <command> [args] [--raw] [--pick <field>] [--cwd <path>] [--project-dir <path>] [--ws <name>] [--json-errors] [--exit-contract=<v>]\n' +
   'Commands: agent, agent-skills, assumption-delta, audit-open, audit-uat, check, check-commit, commit, commit-docs-guard, commit-to-subrepo, pr-subrepo, ' +
   'config-ensure-section, config-get, config-new-project, config-path, config-set, migrate-config, normalize-test-command, ' +
-  'context-predicates, current-timestamp, detect-custom-files, docs-init, drift-guard, effort, extract-messages, find-phase, ' +
+  'context, context-predicates, current-timestamp, detect-custom-files, docs-init, drift-guard, effort, extract-messages, find-phase, ' +
   'from-gsd2, frontmatter, gap-analysis, generate-claude-md, generate-claude-profile, ' +
   'generate-dev-preferences, generate-slug, graphify, history-digest, init, intel, ' +
-  'capability, classify-confidence, git, learnings, list-seeds, list-todos, loop, milestone, package-legitimacy, phase, phase-plan-index, phases, planning, profile-questionnaire, ' +
+  'capability, classify-confidence, git, learnings, list-seeds, list-todos, loop, memory, milestone, package-legitimacy, phase, phase-plan-index, phases, planning, profile-questionnaire, ' +
   'profile-sample, progress, project-instruction-file, prompt-budget, quick-batch, quick-tasks-append, quick-tasks-migrate, requirements, research-plan, research-store, resolve-granularity, resolve-model, restore-custom-files, roadmap, runtime-identity, scaffold, smart-entry, state, ' +
   'config-set-model-profile, dispatch-capacity, dispatch-isolation, dispatch-should-flatten, inspect-dispatch-isolation, record-dispatch-isolation, estimate-calibrate, estimate-calibration, estimate-check, resolve-agent, resolve-dispatch-type, ' +
   'resolve-execution, review-lane, select-revert-commits, skill-manifest, skills-root, stamp-codebase-map, state-snapshot, stats, summary-extract, teams-status, todo, uat, update-context, verification, websearch, windows, ' +

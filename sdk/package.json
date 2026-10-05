@@ -1,0 +1,28 @@
+{
+  "name": "@gsd-x/sdk",
+  "version": "1.0.0",
+  "description": "GSD-X SDK — Memory, Context Compiler, Code Intelligence, and Routing Engine",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "node --test dist/**/*.test.js"
+  },
+  "keywords": [
+    "gsd",
+    "gsd-x",
+    "memory",
+    "context-engineering",
+    "lancedb",
+    "embeddings",
+    "ai-agents"
+  ],
+  "author": "GSD-X Contributors",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0"
+  }
+}

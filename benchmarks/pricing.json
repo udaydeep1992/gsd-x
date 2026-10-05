@@ -1,0 +1,25 @@
+{
+  "currency": "USD",
+  "models": {
+    "gemini-2.5-flash": {
+      "inputPricePerMillion": 0.075,
+      "outputPricePerMillion": 0.30
+    },
+    "gemini-2.5-pro": {
+      "inputPricePerMillion": 1.25,
+      "outputPricePerMillion": 5.00
+    },
+    "claude-3-7-sonnet": {
+      "inputPricePerMillion": 3.00,
+      "outputPricePerMillion": 15.00
+    },
+    "gpt-4o": {
+      "inputPricePerMillion": 2.50,
+      "outputPricePerMillion": 10.00
+    },
+    "default": {
+      "inputPricePerMillion": 1.00,
+      "outputPricePerMillion": 3.00
+    }
+  }
+}
