@@ -1,8 +1,28 @@
-# Documentação do GSD Core
+# Documentação do GSD-X
+
+**GSD, com um mecanismo de memória e contexto mais inteligente.**
+
+[![Maintained by: Codee Studio](https://img.shields.io/badge/Maintained%20by-Codee%20Studio-007acc.svg)](https://www.fiverr.com/codee_studio)
+[![Hire on Fiverr](https://img.shields.io/badge/Fiverr-Hire%20Codee%20Studio-1dbf73?logo=fiverr&logoColor=white)](https://www.fiverr.com/codee_studio)
+[![Telegram](https://img.shields.io/badge/Telegram-@kblautosignals-2CA5E0?logo=telegram&logoColor=white)](https://t.me/kblautosignals)
 
 A documentação está organizada em quatro quadrantes: **tutoriais** ajudam você a aprender na prática, **guias de instruções** resolvem tarefas específicas, **referência** apresenta fatos autorizados, e **explicação** explora conceitos e decisões de design.
 
-Versões por idioma: [English](../README.md) · [Português (pt-BR)](README.md) · [日本語](../ja-JP/README.md) · [简体中文](../zh-CN/README.md)
+Versões por idioma: [English](../README.md) · **Português (pt-BR)** · [日本語](../ja-JP/README.md) · [简体中文](../zh-CN/README.md) · [한국어](../ko-KR/README.md)
+
+---
+
+## Camada de Inteligência e Memória do GSD-X
+
+- [Arquitetura do GSD-X](../GSD-X-ARCHITECTURE.md) — Arquitetura técnica completa da camada de inteligência de contexto e memória
+- [Sistema de Memória Semântica](../MEMORY.md) — Armazenamento vetorial LanceDB local-first, hash de embeddings, pontuação multifatorial, hierarquia de autoridade e decaimento
+- [Compilador de Contexto](../CONTEXT-COMPILER.md) — Pipeline inteligente de 8 estágios, orçamento adaptativo de tokens, omissão de documentos e deduplicação semântica
+- [Otimização de Tokens](../TOKEN-OPTIMIZATION.md) — As cinco alavancas de redução de tokens e impacto empírico quantitativo
+- [Integração com Google Antigravity](../ANTIGRAVITY.md) — Execução do GSD-X com slash commands e subagentes no Antigravity
+- [Benchmarks Empíricos](../BENCHMARKS.md) — Metodologia de testes em 8 cenários, medições brutas e análise de 67,5% de economia
+- [Segurança e Privacidade](../SECURITY.md) — Delimitadores contra injeção de prompt, redação automática de segredos e execução estritamente local
+- [Guia de Migração](../MIGRATION.md) — Atualização suave a partir do Open GSD Core, GSD v1 e GSD v2 sem mudanças disruptivas
+
 
 ---
 
@@ -67,3 +87,17 @@ Versões por idioma: [English](../README.md) · [Português (pt-BR)](README.md) 
 
 - [README raiz](../README.md) — página inicial, início rápido e visão geral da documentação
 - [Changelog](../../CHANGELOG.md) — histórico de versões
+
+---
+
+## Mantenedor e Suporte Comercial
+
+O GSD-X é ativamente desenvolvido e mantido pelo **Codee Studio**.
+
+[![Maintained by: Codee Studio](https://img.shields.io/badge/Maintained%20by-Codee%20Studio-007acc.svg?style=for-the-badge)](https://www.fiverr.com/codee_studio)
+[![Hire on Fiverr](https://img.shields.io/badge/Fiverr-Hire%20Codee%20Studio-1dbf73?style=for-the-badge&logo=fiverr&logoColor=white)](https://www.fiverr.com/codee_studio)
+[![Telegram](https://img.shields.io/badge/Telegram-@kblautosignals-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/kblautosignals)
+
+- 💼 **Contrate no Fiverr**: [fiverr.com/codee_studio](https://www.fiverr.com/codee_studio) —— Engenharia especializada em agentes autônomos, integrações de runtime e ferramentas sob medida.
+- 💬 **Suporte Direto via Telegram**: [@kblautosignals](https://t.me/kblautosignals) —— Canal rápido para consultas técnicas e parcerias de engenharia.
+

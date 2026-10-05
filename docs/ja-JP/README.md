@@ -1,8 +1,28 @@
-# GSD Core ドキュメント
+# GSD-X ドキュメント
+
+**よりスマートなメモリとコンテキストエンジンを備えた GSD。**
+
+[![Maintained by: Codee Studio](https://img.shields.io/badge/Maintained%20by-Codee%20Studio-007acc.svg)](https://www.fiverr.com/codee_studio)
+[![Hire on Fiverr](https://img.shields.io/badge/Fiverr-Hire%20Codee%20Studio-1dbf73?logo=fiverr&logoColor=white)](https://www.fiverr.com/codee_studio)
+[![Telegram](https://img.shields.io/badge/Telegram-@kblautosignals-2CA5E0?logo=telegram&logoColor=white)](https://t.me/kblautosignals)
 
 ドキュメントは 4 つの象限で構成されています。**チュートリアル**は実践で学ぶ、**ハウツーガイド**は特定のタスクを解決する、**リファレンス**は信頼できる情報を示す、**解説**はコンセプトと設計上の決定を探求する。
 
-言語バージョン: [English](../) · [Português (pt-BR)](../pt-BR/README.md) · **日本語** · [简体中文](../zh-CN/README.md) · [한국어](../ko-KR/README.md)
+言語バージョン: [English](../README.md) · [Português (pt-BR)](../pt-BR/README.md) · **日本語** · [简体中文](../zh-CN/README.md) · [한국어](../ko-KR/README.md)
+
+---
+
+## GSD-X インテリジェンス & メモリ層
+
+- [GSD-X システムアーキテクチャ](../GSD-X-ARCHITECTURE.md) — メモリおよびコンテキストインテリジェンス層の包括的技術アーキテクチャ
+- [ローカルセマンティックメモリシステム](../MEMORY.md) — LanceDB ベクトル保存、オフライン特徴ハッシュ、多因子スコアリング、権威階層、時間減衰
+- [コンテキストコンパイラ](../CONTEXT-COMPILER.md) — 8段階の知性パイプライン、適応型トークンバジェット、不要文書の自動省略と意味的重複排除
+- [トークン最適化](../TOKEN-OPTIMIZATION.md) — トークン削減を実現する5つのレバーと定量的分析
+- [Google Antigravity 連携ガイド](../ANTIGRAVITY.md) — Antigravity 内でのスラッシュコマンドとサブエージェント連携手順
+- [実測ベンチマークデータ](../BENCHMARKS.md) — 8つの開発シナリオにおける評価手法、測定生データ、67.5% 削減の検証
+- [セキュリティ & プライバシー](../SECURITY.md) — プロンプトインジェクション隔離、秘密情報自動マスク、ローカル実行境界
+- [移行ガイド](../MIGRATION.md) — Open GSD Core、GSD v1、GSD v2 からの安全なアップグレード手順
+
 
 ---
 
@@ -67,3 +87,17 @@
 
 - [ルート README](../README.md) — ランディングページ、クイックスタート、ドキュメント概要
 - [変更履歴](../../CHANGELOG.md) — リリース履歴
+
+---
+
+## メンテナーおよび商用サポート
+
+GSD-X は **Codee Studio** によって積極的に開発および保守されています。
+
+[![Maintained by: Codee Studio](https://img.shields.io/badge/Maintained%20by-Codee%20Studio-007acc.svg?style=for-the-badge)](https://www.fiverr.com/codee_studio)
+[![Hire on Fiverr](https://img.shields.io/badge/Fiverr-Hire%20Codee%20Studio-1dbf73?style=for-the-badge&logo=fiverr&logoColor=white)](https://www.fiverr.com/codee_studio)
+[![Telegram](https://img.shields.io/badge/Telegram-@kblautosignals-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/kblautosignals)
+
+- 💼 **Fiverr で依頼する**：[fiverr.com/codee_studio](https://www.fiverr.com/codee_studio) —— 専門的な AI エージェント開発、ランタイム統合、特注のコーディングツール構築を提供。
+- 💬 **Telegram ダイレクトサポート**：[@kblautosignals](https://t.me/kblautosignals) —— 迅速な技術相談およびエンジニアリングのお問い合わせ。
+

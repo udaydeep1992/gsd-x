@@ -1,8 +1,28 @@
-# GSD Core 문서
+# GSD-X 문서
+
+**더 스마트한 메모리와 컨텍스트 엔진을 갖춘 GSD.**
+
+[![Maintained by: Codee Studio](https://img.shields.io/badge/Maintained%20by-Codee%20Studio-007acc.svg)](https://www.fiverr.com/codee_studio)
+[![Hire on Fiverr](https://img.shields.io/badge/Fiverr-Hire%20Codee%20Studio-1dbf73?logo=fiverr&logoColor=white)](https://www.fiverr.com/codee_studio)
+[![Telegram](https://img.shields.io/badge/Telegram-@kblautosignals-2CA5E0?logo=telegram&logoColor=white)](https://t.me/kblautosignals)
 
 문서는 네 가지 유형으로 구성됩니다. **튜토리얼**은 직접 해보며 배우고, **how-to 가이드**는 특정 작업을 해결하며, **레퍼런스**는 권위 있는 사실을 제시하고, **설명**은 개념과 설계 결정을 탐구합니다.
 
 언어 버전: [English](../README.md) · [Português (pt-BR)](../pt-BR/README.md) · [日本語](../ja-JP/README.md) · [简体中文](../zh-CN/README.md) · **한국어**
+
+---
+
+## GSD-X 인텔리전스 및 메모리 계층
+
+- [GSD-X 시스템 아키텍처](../GSD-X-ARCHITECTURE.md) — 메모리 및 컨텍스트 인텔리전스 계층의 포괄적 기술 아키텍처
+- [로컬 시맨틱 메모리 시스템](../MEMORY.md) — LanceDB 벡터 저장소, 오프라인 특징 해싱, 다요소 스코어링, 권위 체계 및 시간 감쇠
+- [컨텍스트 컴파일러](../CONTEXT-COMPILER.md) — 8단계 인텔리전스 파이프라인, 적응형 토큰 예산, 문서 생략 및 시맨틱 중복 제거
+- [토큰 최적화](../TOKEN-OPTIMIZATION.md) — 토큰 절감을 이끄는 5대 핵심 레버 및 정량적 영향도 분석
+- [Google Antigravity 연동 가이드](../ANTIGRAVITY.md) — Antigravity 내 슬래시 명령어 및 서브에이전트 연동 절차
+- [실측 벤치마크 데이터](../BENCHMARKS.md) — 8개 개발 시나리오 평가 방법론, 원시 측정치 및 67.5% 절감 분석
+- [보안 및 개인정보 보호](../SECURITY.md) — 프롬프트 인젝션 방어, 비밀 자동 마스킹 및 로컬 실행 경계
+- [마이그레이션 가이드](../MIGRATION.md) — Open GSD Core, GSD v1, GSD v2로부터의 무중단 업그레이드 경로
+
 
 ---
 
@@ -67,3 +87,17 @@
 
 - [루트 README](../README.md) — 랜딩 페이지, 빠른 시작, 문서 개요
 - [변경 로그](../../CHANGELOG.md) — 릴리스 이력
+
+---
+
+## 메인테이너 및 상업적 기술 지원
+
+GSD-X는 **Codee Studio**에서 주도적으로 개발 및 유지보수하고 있습니다.
+
+[![Maintained by: Codee Studio](https://img.shields.io/badge/Maintained%20by-Codee%20Studio-007acc.svg?style=for-the-badge)](https://www.fiverr.com/codee_studio)
+[![Hire on Fiverr](https://img.shields.io/badge/Fiverr-Hire%20Codee%20Studio-1dbf73?style=for-the-badge&logo=fiverr&logoColor=white)](https://www.fiverr.com/codee_studio)
+[![Telegram](https://img.shields.io/badge/Telegram-@kblautosignals-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/kblautosignals)
+
+- 💼 **Fiverr에서 의뢰하기**: [fiverr.com/codee_studio](https://www.fiverr.com/codee_studio) —— 전문적인 Agent 아키텍처 설계, 런타임 통합 및 맞춤형 개발 툴 제작.
+- 💬 **Telegram 전용 지원**: [@kblautosignals](https://t.me/kblautosignals) —— 신속한 기술 질의 및 엔지니어링 상담.
+

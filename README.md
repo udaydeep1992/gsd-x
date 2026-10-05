@@ -4,8 +4,13 @@
 
 **GSD, with a smarter memory and context engine.**
 
+**English** · [Português](README.pt-BR.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja-JP.md) · [한국어](README.ko-KR.md)
+
 An optimized, memory-aware evolution of Open GSD Core for long-running AI software development—combining disciplined planning and verification with semantic project memory, intelligent context compilation, code-aware retrieval, adaptive token budgets, and model-aware routing.
 
+[![Maintained by: Codee Studio](https://img.shields.io/badge/Maintained%20by-Codee%20Studio-007acc.svg)](https://www.fiverr.com/codee_studio)
+[![Hire on Fiverr](https://img.shields.io/badge/Fiverr-Hire%20Codee%20Studio-1dbf73?logo=fiverr&logoColor=white)](https://www.fiverr.com/codee_studio)
+[![Telegram](https://img.shields.io/badge/Telegram-@kblautosignals-2CA5E0?logo=telegram&logoColor=white)](https://t.me/kblautosignals)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x%20%7C%206.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tests](https://img.shields.io/badge/Tests-41%20Passing-brightgreen?style=for-the-badge&logo=node.js&logoColor=white)](tests/)
 [![Token Savings](https://img.shields.io/badge/Token%20Savings-67.5%25%20Aggregate-blueviolet?style=for-the-badge)](docs/BENCHMARKS.md)
@@ -244,6 +249,21 @@ node gsd-core/bin/gsd-tools.cjs context stats --task "Refactor authentication mi
 
 ---
 
+## Maintainer & Commercial Support
+
+GSD-X is actively developed and maintained by **Codee Studio**.
+
+[![Maintained by: Codee Studio](https://img.shields.io/badge/Maintained%20by-Codee%20Studio-007acc.svg?style=for-the-badge)](https://www.fiverr.com/codee_studio)
+[![Hire on Fiverr](https://img.shields.io/badge/Fiverr-Hire%20Codee%20Studio-1dbf73?style=for-the-badge&logo=fiverr&logoColor=white)](https://www.fiverr.com/codee_studio)
+[![Telegram](https://img.shields.io/badge/Telegram-@kblautosignals-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/kblautosignals)
+
+Need custom AI agent architectures, fine-tuned developer workflows, enterprise memory integrations, or production automation setups?
+- 💼 **Hire on Fiverr**: [fiverr.com/codee_studio](https://www.fiverr.com/codee_studio) — Custom agentic development, runtime integrations, and bespoke AI coding tooling.
+- 💬 **Direct Telegram Support**: [@kblautosignals](https://t.me/kblautosignals) — Priority technical inquiries and direct engineering consultations.
+
+---
+
 ## License
 
 MIT © [OpenGSD](https://github.com/open-gsd) and GSD-X Contributors.
+

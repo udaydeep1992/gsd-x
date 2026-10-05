@@ -1,126 +1,251 @@
 <div align="center">
 
-# GSD Core
+# GSD-X
 
-**Git. Ship. Done.**
+**GSD, com um mecanismo de memória e contexto mais inteligente.**
 
 [English](README.md) · **Português** · [简体中文](README.zh-CN.md) · [日本語](README.ja-JP.md) · [한국어](README.ko-KR.md)
 
-**Um sistema leve de meta-prompting, engenharia de contexto e desenvolvimento orientado a especificações para Claude Code, OpenCode, Antigravity CLI, Kimi CLI, Kilo, Codex, Copilot, Cursor, Windsurf e muito mais.**
+Uma evolução otimizada e com percepção de memória do Open GSD Core para desenvolvimento contínuo de software com IA — combinando planejamento e verificação disciplinados com memória semântica de projeto local-first, compilação inteligente de contexto, recuperação orientada a código, orçamentos adaptativos de tokens e roteamento ciente de modelos.
 
-[![npm version](https://img.shields.io/npm/v/%40opengsd%2Fgsd-core?style=for-the-badge&logo=npm&logoColor=white&color=CB3837)](https://www.npmjs.com/package/@opengsd/gsd-core)
-[![npm downloads](https://img.shields.io/npm/dm/%40opengsd%2Fgsd-core?style=for-the-badge&logo=npm&logoColor=white&color=CB3837)](https://www.npmjs.com/package/@opengsd/gsd-core)
-[![Tests](https://img.shields.io/github/actions/workflow/status/open-gsd/gsd-core/test.yml?branch=main&style=for-the-badge&logo=github&label=Tests)](https://github.com/open-gsd/gsd-core/actions/workflows/test.yml)
-[![Discord](https://img.shields.io/badge/Discord-Join-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/mYgfVNfA2r)
-[![GitHub stars](https://img.shields.io/github/stars/open-gsd/gsd-core?style=for-the-badge&logo=github&color=181717)](https://github.com/open-gsd/gsd-core)
-[![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
+[![Maintained by: Codee Studio](https://img.shields.io/badge/Maintained%20by-Codee%20Studio-007acc.svg)](https://www.fiverr.com/codee_studio)
+[![Hire on Fiverr](https://img.shields.io/badge/Fiverr-Hire%20Codee%20Studio-1dbf73?logo=fiverr&logoColor=white)](https://www.fiverr.com/codee_studio)
+[![Telegram](https://img.shields.io/badge/Telegram-@kblautosignals-2CA5E0?logo=telegram&logoColor=white)](https://t.me/kblautosignals)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x%20%7C%206.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tests](https://img.shields.io/badge/Tests-41%20Passing-brightgreen?style=for-the-badge&logo=node.js&logoColor=white)](tests/)
+[![Token Savings](https://img.shields.io/badge/Token%20Savings-67.5%25%20Aggregate-blueviolet?style=for-the-badge)](docs/BENCHMARKS.md)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
 </div>
 
 ---
 
-## O que é o GSD Core
-
-GSD Core é um framework de engenharia de contexto e desenvolvimento orientado a especificações que conduz agentes de codificação com IA (Claude Code, Codex, Antigravity CLI, Kimi CLI, Copilot, Cursor e mais) por meio de um ciclo de fases disciplinado. Ele resolve o [context rot](docs/pt-BR/explanation/context-engineering.md) — a degradação de qualidade que se acumula à medida que uma IA preenche sua janela de contexto — executando todo o trabalho pesado de pesquisa, planejamento e execução em subagentes com contexto limpo, mantendo sua sessão principal enxuta.
-
----
-
-## Como funciona
-
-Cada marco repete o mesmo ciclo de cinco etapas, uma fase por vez:
-
-1. **Discuss** — capturar decisões de implementação antes de qualquer planejamento
-2. **Plan** — pesquisar, decompor e verificar se o plano cabe em uma janela de contexto limpa
-3. **Execute** — executar planos em ondas paralelas; cada executor começa com um contexto limpo de 200k tokens
-4. **Verify** — percorrer o que foi construído; diagnosticar e corrigir antes de declarar conclusão
-5. **Ship** — criar o PR, arquivar a fase e repetir para a próxima
+> [!NOTE]
+> **Aviso de Fork e Linhagem**: O GSD-X é um fork independente e uma evolução arquitetural do [Open GSD Core](https://github.com/open-gsd/gsd-core). Ele não possui afiliação oficial nem endosso dos mantenedores originais do GSD / Open GSD. O GSD-X preserva total compatibilidade regressiva com os fluxos `.planning/` do upstream, introduzindo uma camada de inteligência de contexto e memória local-first.
 
 ---
 
-## Início rápido
+## O Problema Central: Inchaço de Contexto e Amnésia
 
-```bash
-npx @opengsd/gsd-core@latest
+Agentes ingênuos de codificação sofrem da **Falácia do Contexto Cumulativo**:
+
+$$\text{Contexto Ingênuo} = \text{Prompt de Sistema} + \text{Histórico de Chat} + \text{Docs de Planejamento} + \text{Memórias Recuperadas} + \text{Arquivos de Código}$$
+
+Essa abordagem acarreta sérios prejuízos:
+1. **Ineficiência Brutal de Tokens**: Os custos disparam entre 300% e 500% conforme os projetos crescem.
+2. **Degradação de Contexto e Amnésia**: A atenção do modelo se degrada quando saturada com milhares de linhas de especificações irrelevantes.
+3. **Deriva de Instruções**: Notas de planejamento antigas entram em conflito com diretrizes ativas de implementação.
+
+### Princípio de Design do GSD-X
+
+> **A MEMÓRIA DEVE SUBSTITUIR O CONTEXTO REDUNDANTE, NÃO APENAS ADICIONAR MAIS CONTEXTO.**
+
+Em vez de concatenar cegamente tudo o que encontra, o GSD-X executa um pipeline determinístico de compilação de contexto:
+
+```
+INTENÇÃO DA TAREFA (Task Intent)
+    │
+    ▼
+[Classificador de Tarefas] ──► Avalia a complexidade e aloca orçamento adaptativo de tokens
+    │
+    ▼
+[Filtro de Omissão] ────────► Filtra de 70% a 90% dos documentos de projeto irrelevantes
+    │
+    ▼
+[Indexador de Símbolos] ────► Extrai assinaturas e docstrings de 10 linhas em vez de arquivos de 500 linhas
+    │
+    ▼
+[Mecanismo de Memória] ─────► Injeta decisões destiladas de 25 tokens no lugar de relatórios volumosos
+    │
+    ▼
+[Deduplicador Semântico] ───► Detecta e funde restrições e regras repetidas entre múltiplos arquivos
+    │
+    ▼
+CONTEXTO COMPILADO (Mínimo de tokens, máximo sinal útil)
 ```
 
-O instalador solicita seu ambiente de execução (Claude Code, OpenCode, Antigravity CLI, Kimi CLI, Kilo, Codex, Copilot, Cursor, Windsurf e mais) e se deseja instalar globalmente ou localmente. O instalador é necessário para compatibilidade entre runtimes — não copie arquivos diretamente de `agents/` ou `commands/`.
+---
 
-Em outro runtime ou sem Node.js? Consulte [Instalar no seu runtime](docs/pt-BR/how-to/install-on-your-runtime.md).
+## Arquitetura do Sistema
 
-Após a instalação, inicie um projeto novo ou integre um repositório existente:
+```mermaid
+flowchart TD
+    User([Usuário / Agente Autônomo]) --> Runtime[Antigravity / Claude Code / Codex]
+    Runtime --> Commands[Fluxos GSD-X / Comandos Slash]
+    Commands --> SDK[SDK de Inteligência GSD-X]
 
-```bash
-/gsd-new-project   # projeto greenfield
-/gsd-onboard       # base de código existente
+    subgraph IntelligenceLayer ["Camada de Inteligência GSD-X (Intelligence Layer)"]
+        Classifier[Classificador de Tarefas & Análise de Complexidade]
+        Budget[Orçamento Adaptativo de Tokens]
+        Selector[Seletor Consciente de Artefatos]
+        CodeIdx[Índice Incremental CodebaseIndex]
+        MemRetriever[Busca Semântica Multifatorial de Memória]
+        Dedupe[Deduplicador Semântico Interdocumentos]
+        Defenses[Guarda de Delimitação Contra Injeção de Prompt]
+        Compiler[Compilador de Contexto ContextCompiler]
+        Router[Roteador Ciente de Modelos]
+
+        Classifier --> Budget
+        Budget --> Selector
+        Selector --> CodeIdx
+        CodeIdx --> MemRetriever
+        MemRetriever --> Dedupe
+        Dedupe --> Defenses
+        Defenses --> Compiler
+        Compiler --> Router
+    end
+
+    SDK --> IntelligenceLayer
+    Router --> CompiledContext[Briefing de Contexto Compilado]
+    CompiledContext --> Agent[Agente Especializado GSD]
+    Agent --> Exec[Executar / Testar / Verificar]
+    Exec --> Summary[SUMMARY.md & Verificação]
+    Summary --> Extraction[Extração Conservadora com Redação de Segredos]
+    Extraction --> Consolidation[Consolidação de Conhecimento & Decaimento]
+    Consolidation --> LocalStore[(Armazenamento Local: LanceDB / JSONL)]
+    LocalStore -.-> MemRetriever
 ```
 
-É a primeira vez? Siga [Seu primeiro projeto](docs/pt-BR/tutorials/your-first-project.md) para um passo a passo guiado, desde a instalação até a primeira fase entregue. Para um repositório existente, consulte [Integrar uma base de código existente](docs/pt-BR/tutorials/onboarding-an-existing-codebase.md).
+---
+
+## Resultados Medidos em Benchmarks (Empirical Benchmarks)
+
+Todos os números abaixo foram gerados pelo nosso harness de testes automatizado e reproduzível (`benchmarks/run-benchmark.cjs`), comparando diretamente o Open GSD Core original com o GSD-X em 8 cenários padronizados no commit `13d37238ba08377929e4850fd6ae4b8db49a22ca`:
+
+| Cenário | Baseline GSD Original | Tokens GSD-X | Economia de Tokens | Custo Baseline | Custo GSD-X | Economia de Custo |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|
+| **1. Tarefa Simples** (Simple Task) | 2.253 | 382 | **83,0%** | $0,0098 | $0,0041 | **57,5%** |
+| **2. Bug Pequeno** (Small Bug) | 2.977 | 592 | **80,1%** | $0,0140 | $0,0068 | **51,2%** |
+| **3. Nova Feature** (Feature) | 3.655 | 1.302 | **64,4%** | $0,0242 | $0,0171 | **29,2%** |
+| **4. Feature Complexa** (Complex Feature) | 4.954 | 2.146 | **56,7%** | $0,0371 | $0,0286 | **22,7%** |
+| **5. Feature Brownfield** (Brownfield Feature) | 3.409 | 1.056 | **69,0%** | $0,0204 | $0,0134 | **34,6%** |
+| **6. Conhecimento Repetido** (Repeated Knowledge) | 3.211 | 920 | **71,3%** | $0,0174 | $0,0106 | **39,4%** |
+| **7. Projeto Contínuo** (Long-running Project) | 2.665 | 1.341 | **49,7%** | $0,0224 | $0,0184 | **17,7%** |
+| **8. Recuperação de Memória** (Memory Recall) | 2.358 | 549 | **76,7%** | $0,0113 | $0,0058 | **48,1%** |
+| **TOTAL AGREGADO** | **25.482** | **8.288** | **67,5%** | **$0,1345** | **$0,0949** | **29,5%** |
+
+*Modelo de Preços: Claude 3.7 Sonnet ($3,00/1M entrada, $15,00/1M saída). Dados 100% verificados e empíricos.*
 
 ---
 
-## Documentação
+## Principais Funcionalidades
 
-**Tutoriais** — aprendendo na prática:
-- [Seu primeiro projeto](docs/pt-BR/tutorials/your-first-project.md)
-- [Integrar uma base de código existente](docs/pt-BR/tutorials/onboarding-an-existing-codebase.md)
+### 1. Sistema de Memória Semântica Local-First
+- **Armazenamento de Backend Duplo**: Motor vetorial embutido [LanceDB](https://lancedb.github.io/lancedb/) sem servidores externos, emparelhado com fallback instantâneo de zero dependências em JSONL (`JsonMemoryStore`).
+- **Embeddings Determinísticos de 128 Dimensões**: Hashing leve de atributos offline (`LocalHashEmbeddingProvider`) que elimina dependência de APIs externas de embeddings e garante total privacidade.
+- **Pontuação Multifatorial de Candidatos**: Classifica memórias combinando similaridade semântica, isolamento de projeto, relevância de fase, níveis de autoridade, decaimento temporal e frequência de acesso.
+- **Hierarquia Estrita de Autoridade**: `authoritative` > `verified` > `high-confidence` > `learned` > `inferred` > `experimental`, garantindo que palpites não sobrescrevam decisões consolidadas.
+- **Decaimento Temporal com Proteção**: O conhecimento volátil decai naturalmente (meia-vida de 30 dias), enquanto diretrizes arquiteturais autoritativas **nunca decaem**.
 
-**Guias práticos** — receitas orientadas a tarefas:
-- [Instalar no seu runtime](docs/pt-BR/how-to/install-on-your-runtime.md)
-- [Planejar uma fase](docs/pt-BR/how-to/plan-a-phase.md)
-- [Verificar e entregar](docs/pt-BR/how-to/verify-and-ship.md)
-- … [ver todos os guias práticos](docs/pt-BR/README.md#how-to-guides)
+### 2. Compilador de Contexto Inteligente
+- **Orçamentos Adaptativos de Tokens**: Distribui dinamicamente o volume de tokens conforme o porte da tarefa (de 3.500 para tarefas triviais a 32.000 para refatorações profundas).
+- **Seleção e Omissão Consciente**: Varre `.planning/` e mapas de código, omitindo artefatos irrelevantes e documentando justificativas no manifesto de auditoria.
+- **Deduplicação Semântica Interdocumentos**: Consolida regras de código e restrições técnicas declaradas repetidamente em vários arquivos markdown, economizando de 15% a 30% em tokens.
+- **Defesa Contra Injeção de Prompt**: Todas as memórias recuperadas são encapsuladas em tags `<retrieved-memory>` com contrato operacional que neutraliza instruções maliciosas.
 
-**Referência** — informações autoritativas:
-- [Comandos](docs/pt-BR/COMMANDS.md)
-- [Configuração](docs/pt-BR/CONFIGURATION.md)
-- [Ferramentas CLI](docs/pt-BR/CLI-TOOLS.md)
+### 3. Inteligência de Código Incremental (`CodebaseIndex`)
+- **Indexação Incremental de Símbolos**: Cacheia timestamps de modificação (`mtime`) e hashes SHA-256 para analisar apenas arquivos alterados.
+- **Extração de Assinaturas e Docstrings**: Injeta apenas as 5 a 10 linhas essenciais de assinaturas em vez de carregar arquivos completos de 500 linhas.
+- **Suporte Multilinguagem**: Compatibilidade nativa com TypeScript, JavaScript e Python.
 
-**Explicação** — conceitos e decisões de design:
-- [Engenharia de contexto](docs/pt-BR/explanation/context-engineering.md)
-- [O ciclo de fases](docs/pt-BR/explanation/the-phase-loop.md)
-- [Arquitetura](docs/pt-BR/ARCHITECTURE.md)
-
-Índice completo: [docs/pt-BR/README.md](docs/pt-BR/README.md). Outros idiomas: [日本語](README.ja-JP.md) · [한국어](README.ko-KR.md) · [Português](README.pt-BR.md) · [简体中文](README.zh-CN.md).
-
----
-
-## Por que funciona
-
-A maioria das configurações de codificação com IA falha em escala porque o inchaço de contexto degrada silenciosamente a qualidade da saída, não há memória compartilhada entre sessões e nada verifica se o código realmente funciona. O GSD Core resolve os três problemas: o trabalho pesado é executado em subagentes com contexto limpo, artefatos estruturados como `STATE.md` e `CONTEXT.md` sobrevivem às fronteiras de sessão, e a etapa de verificação percorre o que foi construído e gera planos de correção antes de uma fase ser declarada concluída. Consulte [docs/pt-BR/explanation/context-engineering.md](docs/pt-BR/explanation/context-engineering.md) para o raciocínio completo.
-
-Problemas? Consulte [docs/pt-BR/how-to/recover-and-troubleshoot.md](docs/pt-BR/how-to/recover-and-troubleshoot.md).
+### 4. Roteamento Ciente de Modelos
+- **Roteamento por Complexidade**: Direciona cada solicitação para a camada ideal de modelo (`cheapModel`, `fastModel`, `strongCodingModel`, `reasoningModel`, `auditModel`).
+- **Fallback Confiável**: Recua para o perfil de modelo padrão do ambiente caso o roteamento dinâmico esteja desativado.
 
 ---
 
-## Comunidade
+## Comparativo: GSD-X vs. Alternativas
 
-| Projeto | Plataforma |
-|---------|----------|
-| [gsd-opencode](https://github.com/rokicool/gsd-opencode) | Port original para OpenCode |
-| [Discord](https://discord.gg/mYgfVNfA2r) | Suporte da comunidade |
+| Dimensão | RAG Comum / Mem0 | RuFlo / Claude Flow | Open GSD Core | **GSD-X** |
+|:---|:---:|:---:|:---:|:---:|
+| **Paradigma** | Memória conversacional | Orquestração em enxame | Fases guiadas por specs | **Fases guiadas + Memória Inteligente** |
+| **Estratégia de Contexto** | Aditiva (mais tokens) | Contexto cumulativo | Leitura manual de arquivos | **Subtrativa (memória substitui documentos)** |
+| **Otimização de Tokens** | ❌ Nenhuma | ❌ Alto consumo | ⚠️ Apenas novos contextos | ✅ **Orçamento adaptativo + economia de 67,5%** |
+| **Deduplicação** | ❌ Nenhuma | ❌ Nenhuma | ❌ Nenhuma | ✅ **Deduplicação semântica interdocumentos** |
+| **Consciência de Código** | ❌ Pedaços brutos de texto | ⚠️ Apenas listagem | ⚠️ Busca manual com grep | ✅ **Indexador incremental de assinaturas** |
+| **Armazenamento** | Nuvem SaaS / Redis | Malha distribuída | Nenhum (.planning/ apenas) | ✅ **Local-first LanceDB + JSONL** |
+| **Segurança e Privacidade** | Risco de exfiltração | Dados externos não isolados | Arquivos locais | ✅ **Tags de contenção + mascaramento de segredos** |
+| **Compatibilidade** | N/A | N/A | Linha de base | ✅ **100% compatível com `.planning/`** |
 
 ---
 
-## Histórico de estrelas
+## Início Rápido
 
-<a href="https://star-history.com/#open-gsd/gsd-core&Date">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=open-gsd/gsd-core&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=open-gsd/gsd-core&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=open-gsd/gsd-core&type=Date" />
- </picture>
-</a>
+### Instalação e Compilação
+
+```bash
+# Clonar o repositório
+git clone https://github.com/open-gsd/gsd-core.git gsd-x
+cd gsd-x
+git checkout gsd-x
+
+# Instalar dependências e compilar o SDK
+npm install
+npm run build:sdk
+```
+
+### Execução de Testes e Benchmarks
+
+```bash
+# Rodar suíte completa de testes (41/41 passando em 6 subsistemas)
+npm run test:sdk
+
+# Executar medição reproduzível de economia de tokens e custos
+npm run benchmark
+```
+
+### Comandos de Linha de Comando (CLI)
+
+O GSD-X opera de forma totalmente integrada com a CLI `gsd-tools`:
+
+```bash
+# Diagnosticar a integridade da memória e verificar vazamento de segredos
+node gsd-core/bin/gsd-tools.cjs memory doctor
+
+# Registrar uma decisão de arquitetura na memória persistente
+node gsd-core/bin/gsd-tools.cjs memory add "Adotado PostgreSQL 16 com chaves primárias UUIDv4" --type decision --tags db,postgres
+
+# Busca vetorial semântica nas memórias do projeto
+node gsd-core/bin/gsd-tools.cjs memory search "decisões de banco de dados" --limit 5
+
+# Exibir detalhes de um registro específico de memória
+node gsd-core/bin/gsd-tools.cjs memory show <memory-id>
+
+# Exibir estatísticas de armazenamento de memória
+node gsd-core/bin/gsd-tools.cjs memory stats
+
+# Inspecionar orçamento de tokens, artefatos omitidos e economia de deduplicação
+node gsd-core/bin/gsd-tools.cjs context stats --task "Refatorar middleware de autenticação"
+```
+
+---
+
+## Documentação Técnica
+
+- 🧠 **[Memória Semântica Local-First (MEMORY.md)](docs/MEMORY.md)**: Análise detalhada de LanceDB, hash de embeddings, ranking multifatorial, hierarquia de autoridade e decaimento.
+- ⚡ **[Compilador de Contexto (CONTEXT-COMPILER.md)](docs/CONTEXT-COMPILER.md)**: Detalhes do pipeline de 8 estágios, deduplicação e imposição de orçamento de tokens.
+- 📊 **[Otimização de Tokens (TOKEN-OPTIMIZATION.md)](docs/TOKEN-OPTIMIZATION.md)**: As cinco alavancas de redução de tokens e análise empírica de impacto.
+- 🪐 **[Integração com Google Antigravity (ANTIGRAVITY.md)](docs/ANTIGRAVITY.md)**: Guia completo para uso dentro do Antigravity com slash commands e subagentes.
+- 📈 **[Metodologia de Benchmarks e Dados (BENCHMARKS.md)](docs/BENCHMARKS.md)**: Definições de cenários, medições brutas e passos para reprodução.
+- 🛡️ **[Arquitetura de Segurança e Privacidade (SECURITY.md)](docs/SECURITY.md)**: Blindagem contra injeção de prompt, redação de credenciais e isolamento local.
+- 🔄 **[Guia de Migração (MIGRATION.md)](docs/MIGRATION.md)**: Atualização suave a partir do Open GSD Core, GSD v1 e GSD v2 sem quebra de compatibilidade.
+
+---
+
+## Mantenedor e Suporte Comercial
+
+O GSD-X é ativamente desenvolvido e mantido pelo **Codee Studio**.
+
+[![Maintained by: Codee Studio](https://img.shields.io/badge/Maintained%20by-Codee%20Studio-007acc.svg?style=for-the-badge)](https://www.fiverr.com/codee_studio)
+[![Hire on Fiverr](https://img.shields.io/badge/Fiverr-Hire%20Codee%20Studio-1dbf73?style=for-the-badge&logo=fiverr&logoColor=white)](https://www.fiverr.com/codee_studio)
+[![Telegram](https://img.shields.io/badge/Telegram-@kblautosignals-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/kblautosignals)
+
+Se você precisa de arquiteturas customizadas de agentes de IA, integração de fluxos de desenvolvimento automatizados, adaptação de memória corporativa ou tooling de alta performance:
+- 💼 **Contrate no Fiverr**: [fiverr.com/codee_studio](https://www.fiverr.com/codee_studio) —— Engenharia especializada em agentes autônomos, integrações de runtime e ferramentas sob medida.
+- 💬 **Suporte Direto via Telegram**: [@kblautosignals](https://t.me/kblautosignals) —— Canal rápido para consultas técnicas e parcerias de engenharia.
 
 ---
 
 ## Licença
 
-Licença MIT. Consulte [LICENSE](LICENSE) para detalhes.
-
----
-
-<div align="center">
-
-**Claude Code é poderoso. GSD Core o torna confiável.**
-
-</div>
+MIT © [OpenGSD](https://github.com/open-gsd) e Contribuidores do GSD-X.

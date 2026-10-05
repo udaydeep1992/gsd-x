@@ -1,8 +1,28 @@
-# GSD Core documentation
+# GSD-X Documentation
+
+**GSD, with a smarter memory and context engine.**
+
+[![Maintained by: Codee Studio](https://img.shields.io/badge/Maintained%20by-Codee%20Studio-007acc.svg)](https://www.fiverr.com/codee_studio)
+[![Hire on Fiverr](https://img.shields.io/badge/Fiverr-Hire%20Codee%20Studio-1dbf73?logo=fiverr&logoColor=white)](https://www.fiverr.com/codee_studio)
+[![Telegram](https://img.shields.io/badge/Telegram-@kblautosignals-2CA5E0?logo=telegram&logoColor=white)](https://t.me/kblautosignals)
 
 Documentation is organised into four quadrants: **tutorials** help you learn by doing, **how-to guides** solve specific tasks, **reference** states authoritative facts, and **explanation** explores concepts and design decisions.
 
 Language versions: [English](README.md) · [Português (pt-BR)](pt-BR/README.md) · [日本語](ja-JP/README.md) · [简体中文](zh-CN/README.md)
+
+---
+
+## GSD-X Intelligence & Memory Layer
+
+- [GSD-X Architecture](GSD-X-ARCHITECTURE.md) — Comprehensive technical architecture of the memory and context intelligence layer
+- [Semantic Memory System](MEMORY.md) — Local-first LanceDB vector storage, feature hashing, multi-factor scoring, authority hierarchy, and temporal decay
+- [Context Compiler](CONTEXT-COMPILER.md) — 8-stage intelligence pipeline, adaptive token budgeting, document omission, and semantic deduplication
+- [Token Optimization](TOKEN-OPTIMIZATION.md) — The five levers of context reduction and quantitative impact
+- [Google Antigravity Integration](ANTIGRAVITY.md) — Running GSD-X with Antigravity slash commands and subagents
+- [Empirical Benchmarks](BENCHMARKS.md) — 8-scenario benchmark methodology, raw measurements, and 67.5% token cost savings
+- [Security & Privacy](SECURITY.md) — Prompt injection delimiters, automated secret redaction, and local execution boundaries
+- [Migration Guide](MIGRATION.md) — Seamless upgrade paths from Open GSD Core, GSD v1, and GSD v2
+
 
 ---
 
@@ -134,3 +154,17 @@ Language versions: [English](README.md) · [Português (pt-BR)](pt-BR/README.md)
 - [What's new in 1.7.0](whats-new-1.7.0.md) — curated highlights of the 1.7.0 release
 - [Root README](../README.md) — landing page, quickstart, and documentation overview
 - [Changelog](../CHANGELOG.md) — release history
+
+---
+
+## Maintainer & Commercial Support
+
+GSD-X is actively developed and maintained by **Codee Studio**.
+
+[![Maintained by: Codee Studio](https://img.shields.io/badge/Maintained%20by-Codee%20Studio-007acc.svg?style=for-the-badge)](https://www.fiverr.com/codee_studio)
+[![Hire on Fiverr](https://img.shields.io/badge/Fiverr-Hire%20Codee%20Studio-1dbf73?style=for-the-badge&logo=fiverr&logoColor=white)](https://www.fiverr.com/codee_studio)
+[![Telegram](https://img.shields.io/badge/Telegram-@kblautosignals-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/kblautosignals)
+
+- 💼 **Hire on Fiverr**: [fiverr.com/codee_studio](https://www.fiverr.com/codee_studio) — Custom agentic development, runtime integrations, and bespoke AI coding tooling.
+- 💬 **Direct Telegram Support**: [@kblautosignals](https://t.me/kblautosignals) — Priority technical inquiries and direct engineering consultations.
+

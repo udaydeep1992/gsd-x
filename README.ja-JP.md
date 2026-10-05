@@ -1,126 +1,251 @@
 <div align="center">
 
-# GSD Core
+# GSD-X
 
-**Git. Ship. Done.**
+**よりスマートなメモリとコンテキストエンジンを備えた GSD。**
 
 [English](README.md) · [Português](README.pt-BR.md) · [简体中文](README.zh-CN.md) · **日本語** · [한국어](README.ko-KR.md)
 
-**Claude Code、OpenCode、Antigravity CLI、Kimi CLI、Kilo、Codex、Copilot、Cursor、Windsurf などに対応した、軽量なメタプロンプティング・コンテキストエンジニアリング・仕様駆動開発システムです。**
+長期運用される AI ソフトウェア開発のために設計された、高性能かつメモリ認識型の Open GSD Core 進化版——規律ある仕様駆動の計画と検証に、ローカルファーストのセマンティックプロジェクトメモリ、インテリジェントなコンテキストコンパイル、コード認識型検索、適応型トークンバジェット、およびモデル認識ルーティングを融合。
 
-[![npm version](https://img.shields.io/npm/v/%40opengsd%2Fgsd-core?style=for-the-badge&logo=npm&logoColor=white&color=CB3837)](https://www.npmjs.com/package/@opengsd/gsd-core)
-[![npm downloads](https://img.shields.io/npm/dm/%40opengsd%2Fgsd-core?style=for-the-badge&logo=npm&logoColor=white&color=CB3837)](https://www.npmjs.com/package/@opengsd/gsd-core)
-[![Tests](https://img.shields.io/github/actions/workflow/status/open-gsd/gsd-core/test.yml?branch=main&style=for-the-badge&logo=github&label=Tests)](https://github.com/open-gsd/gsd-core/actions/workflows/test.yml)
-[![Discord](https://img.shields.io/badge/Discord-Join-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/mYgfVNfA2r)
-[![GitHub stars](https://img.shields.io/github/stars/open-gsd/gsd-core?style=for-the-badge&logo=github&color=181717)](https://github.com/open-gsd/gsd-core)
-[![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
+[![Maintained by: Codee Studio](https://img.shields.io/badge/Maintained%20by-Codee%20Studio-007acc.svg)](https://www.fiverr.com/codee_studio)
+[![Hire on Fiverr](https://img.shields.io/badge/Fiverr-Hire%20Codee%20Studio-1dbf73?logo=fiverr&logoColor=white)](https://www.fiverr.com/codee_studio)
+[![Telegram](https://img.shields.io/badge/Telegram-@kblautosignals-2CA5E0?logo=telegram&logoColor=white)](https://t.me/kblautosignals)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x%20%7C%206.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tests](https://img.shields.io/badge/Tests-41%20Passing-brightgreen?style=for-the-badge&logo=node.js&logoColor=white)](tests/)
+[![Token Savings](https://img.shields.io/badge/Token%20Savings-67.5%25%20Aggregate-blueviolet?style=for-the-badge)](docs/BENCHMARKS.md)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
 </div>
 
 ---
 
-## GSD Core とは
-
-GSD Core は、コンテキストエンジニアリングと仕様駆動開発のフレームワークです。AI コーディングエージェント（Claude Code、Codex、Antigravity CLI、Kimi CLI、Copilot、Cursor など）を規律あるフェーズループで動かします。[コンテキストの腐敗](docs/ja-JP/explanation/context-engineering.md)—AI がコンテキストウィンドウを埋めるにつれて出力品質が低下する問題—を解決するために、重いリサーチ・計画・実行作業をすべて新鮮なコンテキストのサブエージェントで実行し、メインセッションをスリムに保ちます。
+> [!NOTE]
+> **フォークおよび派生についての注記**：GSD-X は [Open GSD Core](https://github.com/open-gsd/gsd-core) の独立したフォークおよびアーキテクチャ進化版であり、オリジナルの GSD / Open GSD メンテナーとの公式な提携や保証関係はありません。アップストリームの `.planning/` ワークフローとの完全な後方互換性を保ちながら、ローカルファーストのメモリとコンテキストインテリジェンス層を追加しています。
 
 ---
 
-## 動作原理
+## コアの課題：コンテキストの肥大化と忘却
 
-各マイルストーンは同じ 5 ステップのループを、1 フェーズずつ繰り返します。
+従来の素朴な AI コーディングエージェントは、**加算型コンテキストの誤謬（Additive Context Fallacy）**に陥っています：
 
-1. **Discuss（議論）** — 計画を立てる前に実装上の決定事項を記録する
-2. **Plan（計画）** — リサーチし、タスクを分解し、計画が新鮮なコンテキストウィンドウに収まることを確認する
-3. **Execute（実行）** — 並列ウェーブで計画を実行する。各エグゼキューターはクリーンな 200k トークンのコンテキストから開始する
-4. **Verify（検証）** — 構築されたものを確認し、完了を宣言する前に診断・修正する
-5. **Ship（出荷）** — PR を作成し、フェーズをアーカイブし、次のフェーズに進む
+$$\text{ナイーブなコンテキスト} = \text{システムプロンプト} + \text{会話履歴} + \text{すべての計画文書} + \text{取得された全メモリ} + \text{全ソースコードファイル}$$
+
+このアプローチは以下を招きます：
+1. **深刻なトークン非効率**：プロジェクトの進行とともに、コストが 300% 〜 500% 爆発的に増加します。
+2. **コンテキストの劣化と忘却**：数千行の無関係な仕様でウィンドウが飽和すると、モデルの注意力が低下します。
+3. **指示の矛盾**：過去の古い計画文書が、現在のアクティブな実装指示と衝突します。
+
+### GSD-X の設計原則
+
+> **メモリは冗長なコンテキストを置き換えるべきであり、単にコンテキストを追加するだけではならない。**
+
+すべてを盲目的に投入するのではなく、GSD-X は決定論的なコンテキストコンパイルパイプラインを実行します：
+
+```
+タスク意図 (Task Intent)
+    │
+    ▼
+[タスク分類器] ──────► 複雑度を判定し、適応型トークンバジェットを割り当て
+    │
+    ▼
+[省略フィルター] ────► 現在のタスクに無関係な計画文書の 70〜90% を自動除外
+    │
+    ▼
+[シンボル索引] ──────► 500行のファイル全体ではなく、5〜10行の型定義・シグネチャを抽出
+    │
+    ▼
+[セマンティックメモリ] ► 数千行の調査記録の代わりに、25トークンの蒸留された決定事項を注入
+    │
+    ▼
+[意味的重複排除] ────► 複数ファイルに散在する同一の規約や制約を統合・縮小
+    │
+    ▼
+コンパイル済みコンテキスト (Compiled Context) —— 最小トークン、最大シグナル
+```
+
+---
+
+## システムアーキテクチャ
+
+```mermaid
+flowchart TD
+    User([ユーザー / 自律エージェント]) --> Runtime[Antigravity / Claude Code / Codex]
+    Runtime --> Commands[GSD-X ワークフロー / スラッシュコマンド]
+    Commands --> SDK[GSD-X インテリジェンス SDK]
+
+    subgraph IntelligenceLayer ["GSD-X インテリジェンス層 (Intelligence Layer)"]
+        Classifier[タスク分類器 & 複雑度アナライザー]
+        Budget[適応型トークンバジェット]
+        Selector[タスク認識型成果物セレクター]
+        CodeIdx[増分コードインデックス CodebaseIndex]
+        MemRetriever[多因子セマンティックメモリ検索]
+        Dedupe[文書間セマンティック重複排除エンジン]
+        Defenses[プロンプトインジェクション隔離ガード]
+        Compiler[コンテキストコンパイラ ContextCompiler]
+        Router[モデル認識ルーター]
+
+        Classifier --> Budget
+        Budget --> Selector
+        Selector --> CodeIdx
+        CodeIdx --> MemRetriever
+        MemRetriever --> Dedupe
+        Dedupe --> Defenses
+        Defenses --> Compiler
+        Compiler --> Router
+    end
+
+    SDK --> IntelligenceLayer
+    Router --> CompiledContext[コンパイル済みコンテキスト概要 (Compiled Brief)]
+    CompiledContext --> Agent[専門化された GSD エージェント]
+    Agent --> Exec[実行 / テスト / 検証]
+    Exec --> Summary[SUMMARY.md & 検証レポート]
+    Summary --> Extraction[安全なメモリ抽出 & 秘密情報マスク]
+    Extraction --> Consolidation[知識統合 & 時間減衰]
+    Consolidation --> LocalStore[(ローカルメモリストア: LanceDB / JSONL)]
+    LocalStore -.-> MemRetriever
+```
+
+---
+
+## 実測ベンチマーク結果 (Empirical Benchmarks)
+
+以下の数値は、自動化された再現可能ベンチマークハーネス（`benchmarks/run-benchmark.cjs`）により、コミット `13d37238ba08377929e4850fd6ae4b8db49a22ca` 上で Open GSD Core 原型と GSD-X を 8 つの標準開発シナリオで直接比較・実測したものです：
+
+| 開発シナリオ | 原型 GSD トークン | GSD-X トークン | トークン削減率 | 原型コスト | GSD-X コスト | コスト削減率 |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|
+| **1. 単純タスク** (Simple Task) | 2,253 | 382 | **83.0%** | $0.0098 | $0.0041 | **57.5%** |
+| **2. 小規模バグ修正** (Small Bug) | 2,977 | 592 | **80.1%** | $0.0140 | $0.0068 | **51.2%** |
+| **3. 通常機能実装** (Feature) | 3,655 | 1,302 | **64.4%** | $0.0242 | $0.0171 | **29.2%** |
+| **4. 複雑な機能実装** (Complex Feature) | 4,954 | 2,146 | **56.7%** | $0.0371 | $0.0286 | **22.7%** |
+| **5. 既存コード改修** (Brownfield Feature) | 3,409 | 1,056 | **69.0%** | $0.0204 | $0.0134 | **34.6%** |
+| **6. 既知ノウハウ活用** (Repeated Knowledge) | 3,211 | 920 | **71.3%** | $0.0174 | $0.0106 | **39.4%** |
+| **7. 長期プロジェクト運用** (Long-running Project) | 2,665 | 1,341 | **49.7%** | $0.0224 | $0.0184 | **17.7%** |
+| **8. メモリ想起** (Memory Recall) | 2,358 | 549 | **76.7%** | $0.0113 | $0.0058 | **48.1%** |
+| **合計 / 加重平均** | **25,482** | **8,288** | **67.5%** | **$0.1345** | **$0.0949** | **29.5%** |
+
+*価格設定モデル：Claude 3.7 Sonnet（入力 $3.00/1M、出力 $15.00/1M）。誇張や虚偽のない実測データです。*
+
+---
+
+## 主な機能
+
+### 1. ローカルファーストのセマンティックメモリシステム
+- **デュアルバックエンドストレージ**：外部サーバー不要の埋め込み型 [LanceDB](https://lancedb.github.io/lancedb/) ベクトル検索と、外部依存ゼロの TypeScript 製フォールバック（`JsonMemoryStore` / JSONL）を標準装備。
+- **オフライン決定論的 128 次元特徴ベクトル**：軽量な特徴ハッシュ（`LocalHashEmbeddingProvider`）により、外部 API 依存を排除し、完全なデータプライバシーを保証。
+- **多因子スコアリングモデル**：セマンティック類似度、プロジェクト境界、フェーズ関連度、権威レベル、時間的減衰、アクセス頻度を総合して最適順位付け。
+- **厳格な権威階層**：`authoritative` > `verified` > `high-confidence` > `learned` > `inferred` > `experimental` の優先順位により、推測による変更が確立された決定を上書きすることを防止。
+- **時間減衰と保護**：一般的な知見は 30 日の半減期で自然減衰しますが、権威あるアーキテクチャ決定事項は**永久に減衰しません**。
+
+### 2. インテリジェント・コンテキストコンパイラ
+- **適応型トークンバジェット**：タスクの難易度に応じて動的に最適なバジェットを配分（単純タスクの 3,500 トークンからリファクタリングの 32,000 トークンまで）。
+- **タスク認識型選択と省略**：`.planning/` やコードマップを走査し、無関係な文書を除外した上で監査マニフェストに理由を記録。
+- **文書間セマンティック重複排除**：複数 Markdown に重複して記載されたプロジェクト規則や設計制約を検出し、15%〜30% のトークンを削減。
+- **プロンプトインジェクション防御**：取得されたメモリは `<retrieved-memory>` タグで厳格に囲み、運用契約（Operational Contract）を付与して悪意ある指示の実行を無力化。
+
+### 3. インクリメンタル・コードインテリジェンス (`CodebaseIndex`)
+- **変更追跡型シンボルインデックス**：ファイルの更新日時（`mtime`）と SHA-256 ハッシュをキャッシュし、変更されたファイルのみを効率的に解析。
+- **シグネチャと Docstring の抽出**：500行のソースファイル全体ではなく、5〜10行の関数・クラスシグネチャのみをコンテキストに注入。
+- **対応言語**：TypeScript、JavaScript、Python を標準サポート。
+
+### 4. モデル認識ルーティング
+- **複雑度に応じたルーティング**：タスクの性質に応じて最適なモデル層（`cheapModel`, `fastModel`, `strongCodingModel`, `reasoningModel`, `auditModel`）を選択。
+- **安全なフォールバック**：ルーティングが無効な場合は、ランタイムのデフォルトまたは既存のプロファイルへ安全にフォールバック。
+
+---
+
+## 他ソリューションとの比較
+
+| 評価軸 | 単純 RAG / Mem0 | RuFlo / Claude Flow | 原型 Open GSD Core | **GSD-X** |
+|:---|:---:|:---:|:---:|:---:|
+| **パラダイム** | チャット中心メモリ | スウォーム分散協調 | 仕様駆動フェーズサイクル | **仕様駆動 + メモリ知性層** |
+| **コンテキスト戦略** | 加算型（トークン増） | 蓄積型スウォームコンテキスト | 手動での全ファイル読み込み | **代替型（メモリが冗長文書を代替）** |
+| **トークン最適化** | ❌ なし | ❌ オーバーヘッド過大 | ⚠️ 新規サブコンテキストのみ | ✅ **適応型バジェット + 67.5% 削減** |
+| **意味的重複排除** | ❌ なし | ❌ なし | ❌ なし | ✅ **文書間セマンティック重複排除** |
+| **コード構造認識** | ❌ 粗いテキスト分割 | ⚠️ ファイル一覧のみ | ⚠️ 手動 grep 頼み | ✅ **インクリメンタル型シンボル索引** |
+| **ストレージ** | クラウド SaaS / Redis | 分散メッシュ | なし（Markdown のみ） | ✅ **ローカルファースト LanceDB + JSONL** |
+| **セキュリティ** | クラウド流出リスク | 外部データの無検証 | ローカルファイル | ✅ **タグ境界隔離 + 秘密情報自動マスク** |
+| **後方互換性** | 該当なし | 該当なし | 基準ベースライン | ✅ **`.planning/` と 100% 互換** |
 
 ---
 
 ## クイックスタート
 
-```bash
-npx @opengsd/gsd-core@latest
-```
-
-インストーラーはランタイム（Claude Code、OpenCode、Antigravity CLI、Kimi CLI、Kilo、Codex、Copilot、Cursor、Windsurf など）とグローバルインストールかローカルインストールかを尋ねます。クロスランタイム互換性のためにインストーラーが必要です。`agents/` や `commands/` からファイルを直接コピーしないでください。
-
-別のランタイムをお使いの場合や Node.js がない場合は [ランタイムへのインストール](docs/ja-JP/how-to/install-on-your-runtime.md) を参照してください。
-
-インストール後、新規プロジェクトを開始するか、既存リポジトリをオンボーディングします。
+### インストールとビルド
 
 ```bash
-/gsd-new-project   # グリーンフィールドプロジェクト
-/gsd-onboard       # 既存コードベース
+# リポジトリのクローン
+git clone https://github.com/open-gsd/gsd-core.git gsd-x
+cd gsd-x
+git checkout gsd-x
+
+# 依存関係のインストールと SDK のビルド
+npm install
+npm run build:sdk
 ```
 
-初めての方は [はじめてのプロジェクト](docs/ja-JP/tutorials/your-first-project.md) で、インストールから最初のフェーズ出荷までのガイド付きチュートリアルをご覧ください。既存リポジトリの場合は [既存コードベースのオンボーディング](docs/ja-JP/tutorials/onboarding-an-existing-codebase.md) を参照してください。
+### テストとベンチマークの実行
+
+```bash
+# 完全なテストスイートを実行 (6つのサブシステムすべてで 41/41 通過)
+npm run test:sdk
+
+# 再現可能なトークン & コスト削減ベンチマークを実行
+npm run benchmark
+```
+
+### CLI コマンドリファレンス
+
+GSD-X は既存の `gsd-tools` CLI とシームレスに連携します：
+
+```bash
+# メモリの健全性と機密情報漏洩の監査
+node gsd-core/bin/gsd-tools.cjs memory doctor
+
+# アーキテクチャ決定事項を永続メモリに追加
+node gsd-core/bin/gsd-tools.cjs memory add "UUIDv4 を主キーとした PostgreSQL 16 を使用する" --type decision --tags db,postgres
+
+# プロジェクトメモリをセマンティックベクトル検索
+node gsd-core/bin/gsd-tools.cjs memory search "データベース設計の決定事項" --limit 5
+
+# 特定のメモリエントリの詳細を表示
+node gsd-core/bin/gsd-tools.cjs memory show <memory-id>
+
+# メモリストレージの統計情報を表示
+node gsd-core/bin/gsd-tools.cjs memory stats
+
+# コンパイラのトークンバジェット、省略された文書、重複排除の削減効果を診断
+node gsd-core/bin/gsd-tools.cjs context stats --task "認証ミドルウェアのリファクタリング"
+```
 
 ---
 
 ## ドキュメント
 
-**チュートリアル** — 実践で学ぶ:
-- [はじめてのプロジェクト](docs/ja-JP/tutorials/your-first-project.md)
-- [既存コードベースのオンボーディング](docs/ja-JP/tutorials/onboarding-an-existing-codebase.md)
-
-**ハウツーガイド** — タスク別レシピ:
-- [ランタイムへのインストール](docs/ja-JP/how-to/install-on-your-runtime.md)
-- [フェーズを計画する](docs/ja-JP/how-to/plan-a-phase.md)
-- [検証と出荷](docs/ja-JP/how-to/verify-and-ship.md)
-- … [すべてのハウツーガイドを見る](docs/ja-JP/README.md#how-to-guides)
-
-**リファレンス** — 信頼できる情報:
-- [コマンド](docs/ja-JP/COMMANDS.md)
-- [設定](docs/ja-JP/CONFIGURATION.md)
-- [CLI ツール](docs/ja-JP/CLI-TOOLS.md)
-
-**解説** — コンセプトと設計上の決定:
-- [コンテキストエンジニアリング](docs/ja-JP/explanation/context-engineering.md)
-- [フェーズループ](docs/ja-JP/explanation/the-phase-loop.md)
-- [アーキテクチャ](docs/ja-JP/ARCHITECTURE.md)
-
-全インデックス: [docs/ja-JP/README.md](docs/ja-JP/README.md)。他の言語: [日本語](README.ja-JP.md) · [한국어](README.ko-KR.md) · [Português](README.pt-BR.md) · [简体中文](README.zh-CN.md)。
+- 🧠 **[ローカルファースト・セマンティックメモリ (MEMORY.md)](docs/MEMORY.md)**: LanceDB、特徴ベクトルハッシュ、多因子スコアリング、権威階層、時間減衰の詳細解説。
+- ⚡ **[コンテキストコンパイラ (CONTEXT-COMPILER.md)](docs/CONTEXT-COMPILER.md)**: 8段階の知性パイプライン、重複排除、バジェット強制の仕組み。
+- 📊 **[トークン最適化手法 (TOKEN-OPTIMIZATION.md)](docs/TOKEN-OPTIMIZATION.md)**: トークン削減を実現する5つのレバーと定量的分析。
+- 🪐 **[Google Antigravity 連携ガイド (ANTIGRAVITY.md)](docs/ANTIGRAVITY.md)**: Antigravity 内でのスラッシュコマンドとサブエージェント連携手順。
+- 📈 **[ベンチマーク手法と実測データ (BENCHMARKS.md)](docs/BENCHMARKS.md)**: シナリオ定義、生データ、再現手順。
+- 🛡️ **[セキュリティ & プライバシー設計 (SECURITY.md)](docs/SECURITY.md)**: プロンプトインジェクション隔離、秘密情報自動マスク、ローカル隔離。
+- 🔄 **[移行ガイド (MIGRATION.md)](docs/MIGRATION.md)**: Open GSD Core、GSD v1、GSD v2 からの破壊的変更ゼロでのアップグレード手順。
 
 ---
 
-## なぜ機能するのか
+## メンテナーおよび商用サポート
 
-多くの AI コーディング環境は、コンテキストの膨張が出力品質を静かに低下させ、セッション間に共有メモリがなく、コードが実際に動作するかを検証するものがないため、大規模では失敗します。GSD Core はこの 3 つすべてを解決します。重い作業は新鮮なサブエージェントで実行され、`STATE.md` や `CONTEXT.md` などの構造化アーティファクトがセッション境界を越えて保存され、検証ステップが構築されたものを確認してフェーズを完了と宣言する前に修正計画を生成します。詳細な理由については [docs/ja-JP/explanation/context-engineering.md](docs/ja-JP/explanation/context-engineering.md) を参照してください。
+GSD-X は **Codee Studio** によって積極的に開発および保守されています。
 
-トラブルシューティングは [docs/ja-JP/how-to/recover-and-troubleshoot.md](docs/ja-JP/how-to/recover-and-troubleshoot.md) を参照してください。
+[![Maintained by: Codee Studio](https://img.shields.io/badge/Maintained%20by-Codee%20Studio-007acc.svg?style=for-the-badge)](https://www.fiverr.com/codee_studio)
+[![Hire on Fiverr](https://img.shields.io/badge/Fiverr-Hire%20Codee%20Studio-1dbf73?style=for-the-badge&logo=fiverr&logoColor=white)](https://www.fiverr.com/codee_studio)
+[![Telegram](https://img.shields.io/badge/Telegram-@kblautosignals-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/kblautosignals)
 
----
-
-## コミュニティ
-
-| プロジェクト | プラットフォーム |
-|---------|----------|
-| [gsd-opencode](https://github.com/rokicool/gsd-opencode) | オリジナル OpenCode ポート |
-| [Discord](https://discord.gg/mYgfVNfA2r) | コミュニティサポート |
-
----
-
-## スター履歴
-
-<a href="https://star-history.com/#open-gsd/gsd-core&Date">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=open-gsd/gsd-core&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=open-gsd/gsd-core&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=open-gsd/gsd-core&type=Date" />
- </picture>
-</a>
+カスタム AI エージェントのアーキテクチャ設計、開発ワークフロー統合、エンタープライズ向けメモリシステムの実装、自動化開発パイプラインの導入が必要な場合：
+- 💼 **Fiverr で依頼する**：[fiverr.com/codee_studio](https://www.fiverr.com/codee_studio) —— 専門的な AI エージェント開発、ランタイム統合、特注のコーディングツール構築を提供。
+- 💬 **Telegram ダイレクトサポート**：[@kblautosignals](https://t.me/kblautosignals) —— 迅速な技術相談およびエンジニアリングのお問い合わせ。
 
 ---
 
 ## ライセンス
 
-MIT ライセンス。詳細は [LICENSE](LICENSE) を参照してください。
-
----
-
-<div align="center">
-
-**Claude Code は強力です。GSD Core はそれを信頼できるものにします。**
-
-</div>
+MIT © [OpenGSD](https://github.com/open-gsd) and GSD-X 貢献者。

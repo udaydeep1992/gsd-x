@@ -1,8 +1,28 @@
-# GSD Core 文档
+# GSD-X 文档
+
+**GSD，拥有更智能的记忆与上下文引擎。**
+
+[![Maintained by: Codee Studio](https://img.shields.io/badge/Maintained%20by-Codee%20Studio-007acc.svg)](https://www.fiverr.com/codee_studio)
+[![Hire on Fiverr](https://img.shields.io/badge/Fiverr-Hire%20Codee%20Studio-1dbf73?logo=fiverr&logoColor=white)](https://www.fiverr.com/codee_studio)
+[![Telegram](https://img.shields.io/badge/Telegram-@kblautosignals-2CA5E0?logo=telegram&logoColor=white)](https://t.me/kblautosignals)
 
 文档按四个象限组织：**教程**通过实践帮助你学习，**操作指南**解决具体任务，**参考文档**提供权威信息，**概念说明**探讨设计理念与决策。
 
 语言版本：[English](../README.md) · [Português (pt-BR)](../pt-BR/README.md) · [日本語](../ja-JP/README.md) · [简体中文](README.md)
+
+---
+
+## GSD-X 智能与记忆层
+
+- [GSD-X 系统架构](../GSD-X-ARCHITECTURE.md) — 记忆与上下文智能层的完整技术架构设计
+- [本地语义记忆系统](../MEMORY.md) — 基于 LanceDB 的向量存储、离线特征哈希、多因子评分、权威分级与时间衰减
+- [上下文编译器](../CONTEXT-COMPILER.md) — 8 阶段智能编译流水线、自适应 Token 预算、文档按需省略与语义去重
+- [Token 极致优化](../TOKEN-OPTIMIZATION.md) — 五大 Token 优化杠杆与实测影响量化
+- [Google Antigravity 集成](../ANTIGRAVITY.md) — 在 Antigravity 中运行 GSD-X 斜杠命令与子代理
+- [实测基准数据](../BENCHMARKS.md) — 8 个标准化开发场景的评测方法、原始数据与 67.5% 节省分析
+- [安全与隐私防护](../SECURITY.md) — Prompt 注入隔离、自动化机密脱敏与本地执行边界
+- [迁移与升级指南](../MIGRATION.md) — 从 Open GSD Core、GSD v1、GSD v2 无缝升级指南
+
 
 ---
 
@@ -67,3 +87,17 @@
 
 - [根目录 README](../README.md) — 首页、快速开始和文档概览
 - [变更日志](../../CHANGELOG.md) — 发布历史
+
+---
+
+## 维护团队与商业技术支持
+
+GSD-X 由 **Codee Studio** 主导研发与维护。
+
+[![Maintained by: Codee Studio](https://img.shields.io/badge/Maintained%20by-Codee%20Studio-007acc.svg?style=for-the-badge)](https://www.fiverr.com/codee_studio)
+[![Hire on Fiverr](https://img.shields.io/badge/Fiverr-Hire%20Codee%20Studio-1dbf73?style=for-the-badge&logo=fiverr&logoColor=white)](https://www.fiverr.com/codee_studio)
+[![Telegram](https://img.shields.io/badge/Telegram-@kblautosignals-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/kblautosignals)
+
+- 💼 **在 Fiverr 上雇佣我们**：[fiverr.com/codee_studio](https://www.fiverr.com/codee_studio) —— 专业的 Agent 架构设计、定制工具开发与工程落地服务。
+- 💬 **Telegram 直达技术支持**：[@kblautosignals](https://t.me/kblautosignals) —— 快速技术交流与需求直连。
+
