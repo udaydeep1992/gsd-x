@@ -23,6 +23,7 @@ const pricingPath = path.join(__dirname, 'pricing.json');
 let pricing = {
   models: {
     default: { inputPricePerMillion: 1.0, outputPricePerMillion: 3.0 },
+    'claude-opus-5': { inputPricePerMillion: 10.0, outputPricePerMillion: 50.0 },
     'claude-3-7-sonnet': { inputPricePerMillion: 3.0, outputPricePerMillion: 15.0 },
   },
 };
@@ -32,7 +33,7 @@ if (fs.existsSync(pricingPath)) {
   } catch {}
 }
 
-const activeModelKey = process.env.BENCHMARK_MODEL || 'claude-3-7-sonnet';
+const activeModelKey = process.env.BENCHMARK_MODEL || 'claude-opus-5';
 const modelPrice = pricing.models[activeModelKey] || pricing.models.default;
 
 function calculateCost(inputTokens, outputTokens) {

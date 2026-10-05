@@ -21,7 +21,7 @@ An optimized, memory-aware evolution of Open GSD Core for long-running AI softwa
 ---
 
 > [!NOTE]
-> **Fork & Lineage Notice**: GSD-X is an independent fork and architectural evolution of [Open GSD Core](https://github.com/open-gsd/gsd-core). It is not officially affiliated with or endorsed by the original GSD / Open GSD maintainers. GSD-X preserves full backward compatibility with upstream `.planning/` workflows while introducing a local-first memory and context intelligence layer.
+> **Fork & Lineage Notice**: GSD-X is an independent fork and architectural evolution of [Open GSD Core](https://github.com/udaydeep1992/gsd-x). It is not officially affiliated with or endorsed by the original GSD / Open GSD maintainers. GSD-X preserves full backward compatibility with upstream `.planning/` workflows while introducing a local-first memory and context intelligence layer.
 
 ---
 
@@ -112,17 +112,17 @@ All figures below are from our automated, reproducible benchmark harness (`bench
 
 | Scenario | Upstream Baseline | GSD-X Tokens | Token Savings | Baseline Cost | GSD-X Cost | Cost Savings |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **1. Simple Task** | 2,253 | 382 | **83.0%** | $0.0098 | $0.0041 | **57.5%** |
-| **2. Small Bug** | 2,977 | 592 | **80.1%** | $0.0140 | $0.0068 | **51.2%** |
-| **3. Feature** | 3,655 | 1,302 | **64.4%** | $0.0242 | $0.0171 | **29.2%** |
-| **4. Complex Feature** | 4,954 | 2,146 | **56.7%** | $0.0371 | $0.0286 | **22.7%** |
-| **5. Brownfield Feature** | 3,409 | 1,056 | **69.0%** | $0.0204 | $0.0134 | **34.6%** |
-| **6. Repeated Knowledge** | 3,211 | 920 | **71.3%** | $0.0174 | $0.0106 | **39.4%** |
-| **7. Long-running Project** | 2,665 | 1,341 | **49.7%** | $0.0224 | $0.0184 | **17.7%** |
-| **8. Memory Recall** | 2,358 | 549 | **76.7%** | $0.0113 | $0.0058 | **48.1%** |
-| **AGGREGATE TOTAL** | **25,482** | **8,288** | **67.5%** | **$0.1345** | **$0.0949** | **29.5%** |
+| **1. Simple Task** | 2,253 | 382 | **83.0%** | $0.0325 | $0.0138 | **57.5%** |
+| **2. Small Bug** | 2,977 | 592 | **80.1%** | $0.0466 | $0.0227 | **51.2%** |
+| **3. Feature** | 3,655 | 1,302 | **64.4%** | $0.0806 | $0.0570 | **29.2%** |
+| **4. Complex Feature** | 4,954 | 2,146 | **56.7%** | $0.1235 | $0.0955 | **22.7%** |
+| **5. Brownfield Feature** | 3,409 | 1,056 | **69.0%** | $0.0681 | $0.0446 | **34.6%** |
+| **6. Repeated Knowledge** | 3,211 | 920 | **71.3%** | $0.0581 | $0.0352 | **39.4%** |
+| **7. Long-running Project** | 2,665 | 1,341 | **49.7%** | $0.0747 | $0.0614 | **17.7%** |
+| **8. Memory Recall** | 2,358 | 549 | **76.7%** | $0.0376 | $0.0195 | **48.1%** |
+| **AGGREGATE TOTAL** | **25,482** | **8,288** | **67.5%** | **$0.5216** | **$0.3497** | **33.0%** |
 
-*Pricing Model: Claude 3.7 Sonnet ($3.00/1M input, $15.00/1M output). Zero fabricated numbers.*
+*Pricing Model: Claude Opus 5 ($10.00/1M input, $50.00/1M output). Zero fabricated numbers.*
 
 ---
 
@@ -173,7 +173,7 @@ All figures below are from our automated, reproducible benchmark harness (`bench
 
 ```bash
 # Clone the repository
-git clone https://github.com/open-gsd/gsd-core.git gsd-x
+git clone https://github.com/udaydeep1992/gsd-x.git
 cd gsd-x
 git checkout gsd-x
 
@@ -198,22 +198,22 @@ GSD-X integrates seamlessly with the `gsd-tools` CLI:
 
 ```bash
 # Check memory health and audit for secret leaks
-node gsd-core/bin/gsd-tools.cjs memory doctor
+node gsd-x/bin/gsd-tools.cjs memory doctor
 
 # Add an architectural decision to persistent memory
-node gsd-core/bin/gsd-tools.cjs memory add "Use PostgreSQL 16 with UUIDv4 primary keys" --type decision --tags db,postgres
+node gsd-x/bin/gsd-tools.cjs memory add "Use PostgreSQL 16 with UUIDv4 primary keys" --type decision --tags db,postgres
 
 # Semantic vector search across project memory
-node gsd-core/bin/gsd-tools.cjs memory search "database schema decisions" --limit 5
+node gsd-x/bin/gsd-tools.cjs memory search "database schema decisions" --limit 5
 
 # View detailed memory entry
-node gsd-core/bin/gsd-tools.cjs memory show <memory-id>
+node gsd-x/bin/gsd-tools.cjs memory show <memory-id>
 
 # Display memory storage statistics
-node gsd-core/bin/gsd-tools.cjs memory stats
+node gsd-x/bin/gsd-tools.cjs memory stats
 
 # Inspect compiler token budget, omissions, and deduplication savings
-node gsd-core/bin/gsd-tools.cjs context stats --task "Refactor authentication middleware"
+node gsd-x/bin/gsd-tools.cjs context stats --task "Refactor authentication middleware"
 ```
 
 ---

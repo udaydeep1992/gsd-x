@@ -114,17 +114,17 @@ Todos os números abaixo foram gerados pelo nosso harness de testes automatizado
 
 | Cenário | Baseline GSD Original | Tokens GSD-X | Economia de Tokens | Custo Baseline | Custo GSD-X | Economia de Custo |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **1. Tarefa Simples** (Simple Task) | 2.253 | 382 | **83,0%** | $0,0098 | $0,0041 | **57,5%** |
-| **2. Bug Pequeno** (Small Bug) | 2.977 | 592 | **80,1%** | $0,0140 | $0,0068 | **51,2%** |
-| **3. Nova Feature** (Feature) | 3.655 | 1.302 | **64,4%** | $0,0242 | $0,0171 | **29,2%** |
-| **4. Feature Complexa** (Complex Feature) | 4.954 | 2.146 | **56,7%** | $0,0371 | $0,0286 | **22,7%** |
-| **5. Feature Brownfield** (Brownfield Feature) | 3.409 | 1.056 | **69,0%** | $0,0204 | $0,0134 | **34,6%** |
-| **6. Conhecimento Repetido** (Repeated Knowledge) | 3.211 | 920 | **71,3%** | $0,0174 | $0,0106 | **39,4%** |
-| **7. Projeto Contínuo** (Long-running Project) | 2.665 | 1.341 | **49,7%** | $0,0224 | $0,0184 | **17,7%** |
-| **8. Recuperação de Memória** (Memory Recall) | 2.358 | 549 | **76,7%** | $0,0113 | $0,0058 | **48,1%** |
-| **TOTAL AGREGADO** | **25.482** | **8.288** | **67,5%** | **$0,1345** | **$0,0949** | **29,5%** |
+| **1. Tarefa Simples** (Simple Task) | 2.253 | 382 | **83,0%** | $0,0325 | $0,0138 | **57,5%** |
+| **2. Bug Pequeno** (Small Bug) | 2.977 | 592 | **80,1%** | $0,0466 | $0,0227 | **51,2%** |
+| **3. Nova Feature** (Feature) | 3.655 | 1.302 | **64,4%** | $0,0806 | $0,0570 | **29,2%** |
+| **4. Feature Complexa** (Complex Feature) | 4.954 | 2.146 | **56,7%** | $0,1235 | $0,0955 | **22,7%** |
+| **5. Feature Brownfield** (Brownfield Feature) | 3.409 | 1.056 | **69,0%** | $0,0681 | $0,0446 | **34,6%** |
+| **6. Conhecimento Repetido** (Repeated Knowledge) | 3.211 | 920 | **71,3%** | $0,0581 | $0,0352 | **39,4%** |
+| **7. Projeto Contínuo** (Long-running Project) | 2.665 | 1.341 | **49,7%** | $0,0747 | $0,0614 | **17,7%** |
+| **8. Recuperação de Memória** (Memory Recall) | 2.358 | 549 | **76,7%** | $0,0376 | $0,0195 | **48,1%** |
+| **TOTAL AGREGADO** | **25.482** | **8.288** | **67,5%** | **$0,5216** | **$0,3497** | **33,0%** |
 
-*Modelo de Preços: Claude 3.7 Sonnet ($3,00/1M entrada, $15,00/1M saída). Dados 100% verificados e empíricos.*
+*Modelo de Preços: Claude Opus 5 ($10,00/1M entrada, $50,00/1M saída). Dados 100% verificados e empíricos.*
 
 ---
 
@@ -175,7 +175,7 @@ Todos os números abaixo foram gerados pelo nosso harness de testes automatizado
 
 ```bash
 # Clonar o repositório
-git clone https://github.com/open-gsd/gsd-core.git gsd-x
+git clone https://github.com/udaydeep1992/gsd-x.git
 cd gsd-x
 git checkout gsd-x
 
