@@ -77,15 +77,15 @@ Using the measured token consumption from our benchmark, we project costs across
 | Model Provider | Upstream Monthly Cost (1K tasks) | GSD-X Monthly Cost (1K tasks) | Monthly Dollar Savings |
 |:---|:---:|:---:|:---:|
 | **Fable 5** ($10.00/1M in, $50.00/1M out) | $521.62 | $349.68 | **$171.94** (33.0%) |
-| **Claude 3.7 Sonnet** ($3.00/1M in, $15.00/1M out) | $134.50 | $94.90 | **$39.60** (29.5%) |
-| **GPT-4o** ($2.50/1M in, $10.00/1M out) | $106.63 | $77.82 | **$28.81** (27.0%) |
-| **Claude 3.5 Haiku** ($0.80/1M in, $4.00/1M out) | $35.87 | $25.31 | **$10.56** (29.5%) |
-| **Gemini 2.5 Pro** ($1.25/1M in, $5.00/1M out) | $56.04 | $39.54 | **$16.50** (29.5%) |
-| **Gemini 2.5 Flash** ($0.075/1M in, $0.30/1M out) | $3.36 | $2.37 | **$0.99** (29.5%) |
+| **Claude 3.7 Sonnet** ($3.00/1M in, $15.00/1M out) | $156.49 | $104.90 | **$51.58** (33.0%) |
+| **GPT-4o** ($2.50/1M in, $10.00/1M out) | $113.73 | $70.75 | **$42.98** (37.8%) |
+| **Claude 3.5 Haiku** ($0.80/1M in, $4.00/1M out) | $41.73 | $27.97 | **$13.76** (33.0%) |
+| **Gemini 2.5 Pro** ($1.25/1M in, $5.00/1M out) | $56.87 | $35.37 | **$21.49** (37.8%) |
+| **Gemini 2.5 Flash** ($0.075/1M in, $0.30/1M out) | $3.41 | $2.12 | **$1.29** (37.8%) |
 
 ---
 
-## 5. How Savings Are Achieved
+## 6. How Savings Are Achieved
 
 1. **Document Omission (45-65% impact)**: Naive GSD loads all 7 codebase maps (`ARCHITECTURE.md`, `STACK.md`, `CONVENTIONS.md`, etc.). GSD-X filters out unreferenced documents.
 2. **Symbol Extraction (15-20% impact)**: `CodebaseIndex` injects concise function/class declarations instead of dumping entire source files.
@@ -94,7 +94,7 @@ Using the measured token consumption from our benchmark, we project costs across
 
 ---
 
-## 6. How to Reproduce
+## 7. How to Reproduce
 
 The benchmark harness is fully self-contained and requires no external API keys:
 

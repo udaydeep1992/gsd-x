@@ -83,17 +83,17 @@ All figures below are from our automated, reproducible benchmark harness (`bench
 
 | Scenario | Upstream Baseline (Tokens) | GSD-X (Tokens) | Token Savings (%) | Cost Baseline (USD) | GSD-X Cost (USD) | Cost Savings (%) |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Simple Task** | 2,253 | 382 | **83.0%** | $0.0098 | $0.0041 | **57.5%** |
-| **Small Bug** | 2,977 | 592 | **80.1%** | $0.0140 | $0.0068 | **51.2%** |
-| **Feature** | 3,655 | 1,302 | **64.4%** | $0.0242 | $0.0171 | **29.2%** |
-| **Complex Feature** | 4,954 | 2,146 | **56.7%** | $0.0371 | $0.0286 | **22.7%** |
-| **Brownfield Feature** | 3,409 | 1,056 | **69.0%** | $0.0204 | $0.0134 | **34.6%** |
-| **Repeated Knowledge** | 3,211 | 920 | **71.3%** | $0.0174 | $0.0106 | **39.4%** |
-| **Long-Running Project** | 2,665 | 1,341 | **49.7%** | $0.0224 | $0.0184 | **17.7%** |
-| **Memory Recall** | 2,358 | 549 | **76.7%** | $0.0113 | $0.0058 | **48.1%** |
-| **TOTAL / AGGREGATE** | **25,482** | **8,288** | **67.5%** | **$0.1345** | **$0.0949** | **29.5%** |
+| **Simple Task** | 2,253 | 382 | **83.0%** | $0.0325 | $0.0138 | **57.5%** |
+| **Small Bug** | 2,977 | 592 | **80.1%** | $0.0466 | $0.0227 | **51.2%** |
+| **Feature** | 3,655 | 1,302 | **64.4%** | $0.0806 | $0.0570 | **29.2%** |
+| **Complex Feature** | 4,954 | 2,146 | **56.7%** | $0.1235 | $0.0955 | **22.7%** |
+| **Brownfield Feature** | 3,409 | 1,056 | **69.0%** | $0.0681 | $0.0446 | **34.6%** |
+| **Repeated Knowledge** | 3,211 | 920 | **71.3%** | $0.0581 | $0.0352 | **39.4%** |
+| **Long-Running Project** | 2,665 | 1,341 | **49.7%** | $0.0747 | $0.0614 | **17.7%** |
+| **Memory Recall** | 2,358 | 549 | **76.7%** | $0.0376 | $0.0195 | **48.1%** |
+| **TOTAL / AGGREGATE** | **25,482** | **8,288** | **67.5%** | **$0.5216** | **$0.3497** | **33.0%** |
 
-*Pricing Model: Claude 3.7 Sonnet ($3.00/1M input, $15.00/1M output). Benchmarked on upstream commit `13d37238ba08377929e4850fd6ae4b8db49a22ca`.*
+*Pricing Model: Fable 5 ($10.00/1M input, $50.00/1M output). Benchmarked on commit `13d37238ba08377929e4850fd6ae4b8db49a22ca`.*
 
 ---
 
