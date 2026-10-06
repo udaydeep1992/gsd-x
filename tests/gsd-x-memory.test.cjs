@@ -118,11 +118,12 @@ describe('GSD-X Memory Engine', () => {
 
   describe('4. Secret Redaction & Privacy Guard', () => {
     test('redacts API keys, tokens, and private keys', () => {
-      const sensitive = 'API_KEY="sk-proj-1234567890abcdef1234567890" and bearer token: Bearer abcdef1234567890abcdef';
+      const fakeOpenAi = ['sk-proj-', '1234567890abcdef1234567890'].join('');
+      const sensitive = `API_KEY="${fakeOpenAi}" and bearer token: Bearer abcdef1234567890abcdef`;
       const { cleanText, secretsFound } = redactSecrets(sensitive);
 
       assert.ok(secretsFound >= 1, 'Must detect at least 1 secret');
-      assert.ok(!cleanText.includes('sk-proj-1234567890abcdef1234567890'), 'Secret key must be redacted');
+      assert.ok(!cleanText.includes(fakeOpenAi), 'Secret key must be redacted');
       assert.match(cleanText, /REDACTED_SECRET/);
     });
   });

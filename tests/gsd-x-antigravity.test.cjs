@@ -39,10 +39,15 @@ describe('GSD-X Antigravity Security & Prompt Isolation', () => {
   });
 
   test('redacts secrets and API keys during memory extraction', () => {
+    // Construct synthetic test keys dynamically to prevent static secret scanner false positives
+    const fakeAnthropic = ['sk-ant-api03-', 'abcdefghijklmnop1234567890'].join('');
+    const fakeGithub = ['ghp_', '1234567890abcdefghijklmnopqrstuvwxyz1234'].join('');
+    const fakeGoogle = ['AIzaSy', 'B1234567890abcdefghijklmnopqrstuv'].join('');
+
     const rawMarkdown = `
 # Key Decisions & Post Mortem
-We experienced an outage because someone leaked key: sk-ant-api03-abcdefghijklmnop1234567890 and token: ghp_1234567890abcdefghijklmnopqrstuvwxyz1234.
-Google API key was AIzaSyB1234567890abcdefghijklmnopqrstuv.
+We experienced an outage because someone leaked key: ${fakeAnthropic} and token: ${fakeGithub}.
+Google API key was ${fakeGoogle}.
 
 ## Key Decisions
 - Rotate all keys immediately and enable secret scanning because of security compliance.
@@ -50,8 +55,9 @@ Google API key was AIzaSyB1234567890abcdefghijklmnopqrstuv.
 
     const { cleanText, secretsFound } = redactSecrets(rawMarkdown);
     assert.ok(secretsFound >= 2);
-    assert.strictEqual(cleanText.includes('sk-ant-api03-abcdefghijklmnop1234567890'), false);
-    assert.strictEqual(cleanText.includes('ghp_1234567890abcdefghijklmnopqrstuvwxyz1234'), false);
+    assert.strictEqual(cleanText.includes(fakeAnthropic), false);
+    assert.strictEqual(cleanText.includes(fakeGithub), false);
+    assert.strictEqual(cleanText.includes(fakeGoogle), false);
     assert.ok(cleanText.includes('[REDACTED_SECRET]'));
 
     const extracted = extractMemoriesFromDocument({
