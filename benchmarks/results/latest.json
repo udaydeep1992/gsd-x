@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-10-05T19:25:51.047Z",
+  "timestamp": "2026-10-06T10:54:56.332Z",
   "gitCommit": "13d37238ba08377929e4850fd6ae4b8db49a22ca (upstream fork)",
-  "model": "claude-opus-5",
+  "model": "fable-5",
   "pricing": {
     "inputPricePerMillion": 10,
     "outputPricePerMillion": 50
@@ -28,14 +28,14 @@
         "outputTokens": 250,
         "totalTokens": 2253,
         "cost": 0.03253,
-        "durationMs": 19
+        "durationMs": 16
       },
       "gsx": {
         "inputTokens": 132,
         "outputTokens": 250,
         "totalTokens": 382,
         "cost": 0.01382,
-        "durationMs": 21
+        "durationMs": 19
       },
       "savings": {
         "tokenPercent": 83,
@@ -53,14 +53,14 @@
         "outputTokens": 420,
         "totalTokens": 2977,
         "cost": 0.04657,
-        "durationMs": 16
+        "durationMs": 22
       },
       "gsx": {
         "inputTokens": 172,
         "outputTokens": 420,
         "totalTokens": 592,
         "cost": 0.02272,
-        "durationMs": 19
+        "durationMs": 21
       },
       "savings": {
         "tokenPercent": 80.1,
@@ -78,14 +78,14 @@
         "outputTokens": 1100,
         "totalTokens": 3655,
         "cost": 0.08055,
-        "durationMs": 15
+        "durationMs": 22
       },
       "gsx": {
         "inputTokens": 202,
         "outputTokens": 1100,
         "totalTokens": 1302,
         "cost": 0.05702,
-        "durationMs": 19
+        "durationMs": 20
       },
       "savings": {
         "tokenPercent": 64.4,
@@ -103,14 +103,14 @@
         "outputTokens": 1850,
         "totalTokens": 4954,
         "cost": 0.12354,
-        "durationMs": 19
+        "durationMs": 17
       },
       "gsx": {
         "inputTokens": 296,
         "outputTokens": 1850,
         "totalTokens": 2146,
         "cost": 0.09546,
-        "durationMs": 22
+        "durationMs": 20
       },
       "savings": {
         "tokenPercent": 56.7,
@@ -128,14 +128,14 @@
         "outputTokens": 850,
         "totalTokens": 3409,
         "cost": 0.06809,
-        "durationMs": 15
+        "durationMs": 24
       },
       "gsx": {
         "inputTokens": 206,
         "outputTokens": 850,
         "totalTokens": 1056,
         "cost": 0.044559999999999995,
-        "durationMs": 21
+        "durationMs": 22
       },
       "savings": {
         "tokenPercent": 69,
@@ -160,7 +160,7 @@
         "outputTokens": 650,
         "totalTokens": 920,
         "cost": 0.0352,
-        "durationMs": 24
+        "durationMs": 18
       },
       "savings": {
         "tokenPercent": 71.3,
@@ -178,14 +178,14 @@
         "outputTokens": 1200,
         "totalTokens": 2665,
         "cost": 0.07465,
-        "durationMs": 22
+        "durationMs": 23
       },
       "gsx": {
         "inputTokens": 141,
         "outputTokens": 1200,
         "totalTokens": 1341,
         "cost": 0.06141,
-        "durationMs": 24
+        "durationMs": 26
       },
       "savings": {
         "tokenPercent": 49.7,
@@ -203,14 +203,14 @@
         "outputTokens": 350,
         "totalTokens": 2358,
         "cost": 0.037579999999999995,
-        "durationMs": 18
+        "durationMs": 20
       },
       "gsx": {
         "inputTokens": 199,
         "outputTokens": 350,
         "totalTokens": 549,
         "cost": 0.019489999999999997,
-        "durationMs": 20
+        "durationMs": 25
       },
       "savings": {
         "tokenPercent": 76.7,

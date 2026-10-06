@@ -1,7 +1,7 @@
 # GSD-X Token & Cost Benchmark Report
 
-**Date:** 2026-10-05
-**Model:** `claude-opus-5` ($10/M in, $50/M out)
+**Date:** 2026-10-06
+**Model:** `fable-5` ($10/M in, $50/M out)
 **Aggregate Savings:** **67.5%** fewer tokens | **33%** lower cost
 **Range:** Best: 83% | Median: 71.3% | Worst: 49.7%
 

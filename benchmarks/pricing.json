@@ -1,7 +1,7 @@
 {
   "currency": "USD",
   "models": {
-    "claude-opus-5": {
+    "fable-5": {
       "inputPricePerMillion": 10.00,
       "outputPricePerMillion": 50.00
     },

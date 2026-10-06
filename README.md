@@ -122,7 +122,18 @@ All figures below are from our automated, reproducible benchmark harness (`bench
 | **8. Memory Recall** | 2,358 | 549 | **76.7%** | $0.0376 | $0.0195 | **48.1%** |
 | **AGGREGATE TOTAL** | **25,482** | **8,288** | **67.5%** | **$0.5216** | **$0.3497** | **33.0%** |
 
-*Pricing Model: Claude Opus 5 ($10.00/1M input, $50.00/1M output). Zero fabricated numbers.*
+*Pricing Model: Fable 5 ($10.00/1M input, $50.00/1M output). Zero fabricated numbers.*
+
+### Impact at Scale: 1M Baseline Tokens vs. GSD-X
+
+| Metric | Upstream Baseline (1M Tokens) | GSD-X Equivalent (325K Tokens) | Net Savings with GSD-X |
+|:---|:---:|:---:|:---:|
+| **Token Consumption** | 1,000,000 tokens | 325,249 tokens | **674,751 tokens saved (67.5% reduction)** |
+| **Fable 5 Cost** | $20.47 | $13.72 | **$6.75 saved per 1M tokens (33.0% cost reduction)** |
+| **At 10M Tokens** | $204.70 | $137.20 | **$67.50 saved** (6.75M tokens eliminated) |
+| **At 100M Tokens** | $2,047.00 | $1,372.00 | **$675.00 saved** (67.48M tokens eliminated) |
+
+*Calculated with Fable 5 ($10.00/1M input, $50.00/1M output). For every 1,000,000 tokens consumed by standard GSD workflows, GSD-X cuts consumption to ~325,000 tokens—saving $6.75 per million tokens while eliminating context window bloat.*
 
 ---
 

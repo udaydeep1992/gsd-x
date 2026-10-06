@@ -1,6 +1,6 @@
 # GSD-X Benchmark Report: Token & Cost Efficiency
 
-> **Empirical Validation**: Real, reproducible token and cost measurements comparing upstream Open GSD Core with GSD-X across 8 standardized software engineering scenarios on **Claude Opus 5**.
+> **Empirical Validation**: Real, reproducible token and cost measurements comparing upstream Open GSD Core with GSD-X across 8 standardized software engineering scenarios on **Fable 5**.
 
 ---
 
@@ -11,11 +11,11 @@ GSD-X was designed to prove that **semantic memory and intelligent context compi
 To validate this empirically, an automated benchmark harness was built (`benchmarks/run-benchmark.cjs`) that executes identical software development scenarios through both upstream GSD and GSD-X pipelines.
 
 ### Key Measured Results
-- **Benchmark Model**: **Claude Opus 5** ($10.00 / 1M input tokens, $50.00 / 1M output tokens).
+- **Benchmark Model**: **Fable 5** ($10.00 / 1M input tokens, $50.00 / 1M output tokens).
 - **Aggregate Token Savings**: **67.5%** (25,482 baseline tokens reduced to 8,288 tokens).
 - **Median Token Savings**: **71.3%**.
 - **Savings Range**: **49.7% to 83.0%** across all scenarios.
-- **Cost Reduction**: **33.0%** net cost savings on Claude Opus 5 pricing ($0.5216 down to $0.3497).
+- **Cost Reduction**: **33.0%** net cost savings on Fable 5 pricing ($0.5216 down to $0.3497).
 - **Integrity Guarantee**: **Zero fabricated numbers.** All data below was produced by running `npm run benchmark` directly against the codebase on commit `13d37238ba08377929e4850fd6ae4b8db49a22ca`.
 
 ---
@@ -39,7 +39,7 @@ The suite evaluates 8 distinct, realistic development scenarios:
 
 ## 3. Detailed Measured Results
 
-All costs calculated on **Claude Opus 5** ($10.00/1M input, $50.00/1M output):
+All costs calculated on **Fable 5** ($10.00/1M input, $50.00/1M output):
 
 | Scenario | Upstream Baseline (Tokens) | GSD-X (Tokens) | Token Savings (%) | Baseline Cost (USD) | GSD-X Cost (USD) | Cost Savings (%) |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -55,13 +55,28 @@ All costs calculated on **Claude Opus 5** ($10.00/1M input, $50.00/1M output):
 
 ---
 
-## 4. Cost Analysis Across Model Providers
+## 4. Impact at Scale: 1M Baseline Tokens vs. GSD-X
+
+When projecting token and cost efficiency at scale, the empirical 67.5% token reduction and 33.0% cost reduction translate into significant operational savings:
+
+| Metric | Upstream Baseline (1M Tokens) | GSD-X Equivalent (325K Tokens) | Net Savings with GSD-X |
+|:---|:---:|:---:|:---:|
+| **Token Consumption** | 1,000,000 tokens | 325,249 tokens | **674,751 tokens saved (67.5% reduction)** |
+| **Fable 5 Cost** | $20.47 | $13.72 | **$6.75 saved per 1M tokens (33.0% cost reduction)** |
+| **At 10M Tokens** | $204.70 | $137.20 | **$67.50 saved** (6.75M tokens eliminated) |
+| **At 100M Tokens** | $2,047.00 | $1,372.00 | **$675.00 saved** (67.48M tokens eliminated) |
+
+> **Key Takeaway**: For every 1,000,000 tokens an autonomous agent workflow would consume using standard GSD, GSD-X compiles and delivers the required context in only **325,249 tokens**—saving **$6.75 per million tokens** under Fable 5 while preventing context window pollution and hallucination.
+
+---
+
+## 5. Cost Analysis Across Model Providers
 
 Using the measured token consumption from our benchmark, we project costs across major AI providers (1,000 tasks per month):
 
 | Model Provider | Upstream Monthly Cost (1K tasks) | GSD-X Monthly Cost (1K tasks) | Monthly Dollar Savings |
 |:---|:---:|:---:|:---:|
-| **Claude Opus 5** ($10.00/1M in, $50.00/1M out) | $521.62 | $349.68 | **$171.94** (33.0%) |
+| **Fable 5** ($10.00/1M in, $50.00/1M out) | $521.62 | $349.68 | **$171.94** (33.0%) |
 | **Claude 3.7 Sonnet** ($3.00/1M in, $15.00/1M out) | $134.50 | $94.90 | **$39.60** (29.5%) |
 | **GPT-4o** ($2.50/1M in, $10.00/1M out) | $106.63 | $77.82 | **$28.81** (27.0%) |
 | **Claude 3.5 Haiku** ($0.80/1M in, $4.00/1M out) | $35.87 | $25.31 | **$10.56** (29.5%) |
@@ -92,7 +107,7 @@ cd gsd-x
 npm install
 npm run build:sdk
 
-# Execute benchmark with Claude Opus 5 pricing
+# Execute benchmark with Fable 5 pricing
 npm run benchmark
 ```
 

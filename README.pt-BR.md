@@ -124,7 +124,18 @@ Todos os números abaixo foram gerados pelo nosso harness de testes automatizado
 | **8. Recuperação de Memória** (Memory Recall) | 2.358 | 549 | **76,7%** | $0,0376 | $0,0195 | **48,1%** |
 | **TOTAL AGREGADO** | **25.482** | **8.288** | **67,5%** | **$0,5216** | **$0,3497** | **33,0%** |
 
-*Modelo de Preços: Claude Opus 5 ($10,00/1M entrada, $50,00/1M saída). Dados 100% verificados e empíricos.*
+*Modelo de Preços: Fable 5 ($10,00/1M entrada, $50,00/1M saída). Dados 100% verificados e empíricos.*
+
+### Impacto em Escala: 1 Milhão de Tokens de Referência vs. GSD-X (1M Baseline Tokens vs. GSD-X)
+
+| Métrica | Linha de Base Upstream (1.000.000 Tokens) | Equivalente GSD-X (325.249 Tokens) | Economia Líquida com GSD-X |
+|:---|:---:|:---:|:---:|
+| **Tokens Consumidos** | 1.000.000 tokens | 325.249 tokens | **674.751 tokens economizados (redução de 67,5%)** |
+| **Custo Fable 5** | $20,47 | $13,72 | **$6,75 economizados a cada 1M tokens (redução de 33,0%)** |
+| **Em 10M Tokens** | $204,70 | $137,20 | **$67,50 economizados** (6.747.510 tokens economizados) |
+| **Em 100M Tokens** | $2.047,00 | $1.372,00 | **$675,00 economizados** (67.475.100 tokens economizados) |
+
+*Calculado com Fable 5 ($10,00/1M entrada, $50,00/1M saída). Para cada 1 milhão de tokens consumidos na linha de base upstream, o GSD-X comprime para ~325 mil tokens, economizando $6,75 por milhão e eliminando a degradação de contexto.*
 
 ---
 
