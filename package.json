@@ -1,9 +1,10 @@
 {
-  "name": "@opengsd/gsd-core",
+  "name": "@udaydeep1992/gsd-x",
   "version": "1.16.0",
-  "description": "GSD Core is a meta-prompting, context engineering, and spec-driven development system for AI coding agents.",
+  "description": "GSD, redesigned to save up to 67.5% of your tokens. Smart memory, intelligent context compression, adaptive token compilation, and code indexing for faster, more efficient long-running AI coding agents.",
   "main": ".opencode/plugins/gsd-core.js",
   "bin": {
+    "gsd-x": "bin/install.js",
     "gsd-core": "bin/install.js",
     "gsd-tools": "gsd-core/bin/gsd-tools.cjs",
     "gsd_run": "gsd-core/bin/gsd_run",
@@ -16,6 +17,7 @@
     "gsd-core",
     "assets",
     "agents",
+    "sdk/dist",
     ".claude-plugin",
     ".opencode",
     "GEMINI.md",
@@ -46,17 +48,20 @@
     "context-engineering",
     "spec-driven-development",
     "codex",
-    "codex-cli"
+    "codex-cli",
+    "gsd-x",
+    "semantic-memory",
+    "token-optimization"
   ],
-  "author": "OpenGSD",
+  "author": "Codee Studio & GSD-X Contributors",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/open-gsd/gsd-core.git"
+    "url": "git+https://github.com/udaydeep1992/gsd-x.git"
   },
-  "homepage": "https://github.com/open-gsd/gsd-core",
+  "homepage": "https://github.com/udaydeep1992/gsd-x",
   "bugs": {
-    "url": "https://github.com/open-gsd/gsd-core/issues"
+    "url": "https://github.com/udaydeep1992/gsd-x/issues"
   },
   "publishConfig": {
     "access": "public"
@@ -110,7 +115,7 @@
     "check:integrity": "node scripts/check-npm-integrity.cjs",
     "build": "npm run generate:identity && npm run build:lib && npm run gen:section-manifest && npm run gen:context-index && npm run gen:plugin-skills && npm run gen:loop-host-contract && npm run gen:capability-registry && npm run build:hooks",
     "build:hooks": "node scripts/build-hooks.js",
-    "build:lib": "tsc -p tsconfig.build.json",
+    "build:lib": "node node_modules/typescript/bin/tsc -p tsconfig.build.json",
     "build:sdk": "node node_modules/typescript/bin/tsc -p sdk/tsconfig.json",
     "test:sdk": "node --test tests/gsd-x-*.test.cjs",
     "benchmark": "node benchmarks/run-benchmark.cjs",
@@ -124,7 +129,7 @@
     "gen:section-manifest": "node scripts/gen-section-manifest.cjs --write",
     "regen:derived": "npm run build && npm run gen:registry && node scripts/gen-adr-index.cjs --write && node scripts/gen-features.cjs --write && node scripts/gen-capability-matrix.cjs --write && node scripts/gen-inventory-manifest.cjs --write && node scripts/gen-context-index.cjs --write && node scripts/gen-state-md-docs.cjs --write && npm run gen:section-manifest && node scripts/sync-manifest-versions.cjs && npm run gen:install-tree && node scripts/gen-scripts-cli-exit.cjs --write && node scripts/gen-hooks-cli-exit.cjs --write && node scripts/gen-exit-code-registry.cjs --write && node scripts/gen-exit-code-docs.cjs --write && node scripts/gen-platform-conformance-tier.cjs --write && node scripts/gen-platform-conformance-tier.cjs --target macos --write",
     "validate:registry": "node scripts/validate-registry.cjs",
-    "prepack": "npm run build:lib",
+    "prepack": "npm run build:lib && npm run build:sdk",
     "prepare": "npm run build:lib",
     "version": "node scripts/sync-manifest-versions.cjs --stage && node scripts/gen-capability-registry.cjs --write && git add gsd-core/bin/lib/capability-registry.cjs",
     "prepublishOnly": "npm run build:lib && npm run build:hooks",

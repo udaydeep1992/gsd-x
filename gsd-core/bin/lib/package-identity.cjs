@@ -3,13 +3,13 @@
 //   node scripts/generate-package-identity.cjs
 'use strict';
 
-const packageName = "@opengsd/gsd-core";
-const binName = "gsd-core";
-const repoSlug = "open-gsd/gsd-core";
-const repoUrl = "https://github.com/open-gsd/gsd-core";
-const changelogRawUrl = "https://raw.githubusercontent.com/open-gsd/gsd-core/main/CHANGELOG.md";
-const cacheSlug = "opengsd-gsd-core";
-const updateCacheFileName = "gsd-update-check-opengsd-gsd-core.json";
+const packageName = "@udaydeep1992/gsd-x";
+const binName = "gsd-x";
+const repoSlug = "udaydeep1992/gsd-x";
+const repoUrl = "https://github.com/udaydeep1992/gsd-x";
+const changelogRawUrl = "https://raw.githubusercontent.com/udaydeep1992/gsd-x/main/CHANGELOG.md";
+const cacheSlug = "udaydeep1992-gsd-x";
+const updateCacheFileName = "gsd-update-check-udaydeep1992-gsd-x.json";
 
 function formatManualInstall({ packageName, binName, scope, runtime } = {}) {
   const runtimeFlag = runtime ? ` --${runtime}` : '';
