@@ -1,6 +1,6 @@
 {
   "name": "@udaydeep1992/gsd-x",
-  "version": "1.16.0",
+  "version": "1.16.1",
   "description": "GSD, redesigned to save up to 67.5% of your tokens. Smart memory, intelligent context compression, adaptive token compilation, and code indexing for faster, more efficient long-running AI coding agents.",
   "main": ".opencode/plugins/gsd-core.js",
   "bin": {
