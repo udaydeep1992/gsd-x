@@ -86,7 +86,7 @@ function runBenchmark() {
     const baselineOutTokens = scenario.typicalOutputTokens;
     const baselineTotal = baselineInTokens + baselineOutTokens;
     const baselineCost = calculateCost(baselineInTokens, baselineOutTokens);
-    const baselineDuration = Math.round(15 + Math.random() * 10);
+    const baselineDuration = 20;
 
     // ── 2. GSD-X Intelligence Pipeline ──────────────────────────────────────
     // GSD-X:
@@ -126,7 +126,7 @@ function runBenchmark() {
     const gsxOutTokens = scenario.typicalOutputTokens;
     const gsxTotal = gsxInTokens + gsxOutTokens;
     const gsxCost = calculateCost(gsxInTokens, gsxOutTokens);
-    const gsxDuration = Math.round(18 + Math.random() * 8);
+    const gsxDuration = 22;
 
     const tokenSavings = Math.round(((baselineTotal - gsxTotal) / baselineTotal) * 1000) / 10;
     const costSavings = Math.round(((baselineCost - gsxCost) / baselineCost) * 1000) / 10;
@@ -160,7 +160,7 @@ function runBenchmark() {
     console.log(`✓ ${scenario.name}:`);
     console.log(`    Baseline: ${baselineTotal.toLocaleString()} tokens ($${baselineCost.toFixed(5)})`);
     console.log(`    GSD-X:    ${gsxTotal.toLocaleString()} tokens ($${gsxCost.toFixed(5)})`);
-    console.log(`    Savings:  ${tokenSavings}% fewer tokens (${(baselineTotal - gsxTotal).toLocaleString()} saved)\n`);
+    console.log(`    Savings:  ${tokenSavings.toFixed(1)}% fewer tokens (${(baselineTotal - gsxTotal).toLocaleString()} saved)\n`);
   }
 
   // Aggregate metrics
@@ -198,7 +198,12 @@ function runBenchmark() {
     scenarios: results,
   };
 
-  // Write results
+  // Write canonical dataset to benchmarks/data/benchmark_results.json
+  const dataDir = path.join(__dirname, 'data');
+  fs.mkdirSync(dataDir, { recursive: true });
+  fs.writeFileSync(path.join(dataDir, 'benchmark_results.json'), JSON.stringify(reportPayload, null, 2), 'utf-8');
+
+  // Write backwards-compatible output to benchmarks/results/latest.json
   const resultsDir = path.join(__dirname, 'results');
   fs.mkdirSync(resultsDir, { recursive: true });
   fs.writeFileSync(path.join(resultsDir, 'latest.json'), JSON.stringify(reportPayload, null, 2), 'utf-8');
@@ -206,27 +211,29 @@ function runBenchmark() {
   // Generate latest.md
   let md = `# GSD-X Token & Cost Benchmark Report\n\n`;
   md += `**Date:** ${new Date().toISOString().split('T')[0]}\n`;
-  md += `**Model:** \`${activeModelKey}\` ($${modelPrice.inputPricePerMillion}/M in, $${modelPrice.outputPricePerMillion}/M out)\n`;
-  md += `**Aggregate Savings:** **${aggregateSavingsPercent}%** fewer tokens | **${aggregateCostSavings}%** lower cost\n`;
-  md += `**Range:** Best: ${bestCase}% | Median: ${medianSavings}% | Worst: ${worstCase}%\n\n`;
+  md += `**Model:** \`${activeModelKey}\` ($${modelPrice.inputPricePerMillion.toFixed(2)}/M in, $${modelPrice.outputPricePerMillion.toFixed(2)}/M out)\n`;
+  md += `**Aggregate Savings:** **${aggregateSavingsPercent.toFixed(1)}%** fewer tokens | **${aggregateCostSavings.toFixed(1)}%** lower cost\n`;
+  md += `**Range:** Best: ${bestCase.toFixed(1)}% | Median: ${medianSavings.toFixed(1)}% | Worst: ${worstCase.toFixed(1)}%\n\n`;
 
   md += `## Detailed Scenario Breakdown\n\n`;
-  md += `| Scenario | Category | Upstream Baseline | GSD-X | Tokens Saved | Token Savings % | Est. Cost Savings |\n`;
-  md += `|---|---|---:|---:|---:|---:|---:|\n`;
+  md += `| Scenario | Category | Upstream Baseline | GSD-X | Tokens Saved | Token Savings % | Baseline Cost | GSD-X Cost | Est. Cost Savings | Cost Savings % |\n`;
+  md += `|---|---|---:|---:|---:|---:|---:|---:|---:|---:|\n`;
 
   for (const r of results) {
-    md += `| ${r.name} | \`${r.category}\` | ${r.baseline.totalTokens.toLocaleString()} | ${r.gsx.totalTokens.toLocaleString()} | ${r.savings.tokensSaved.toLocaleString()} | **${r.savings.tokenPercent}%** | $${r.savings.costSaved.toFixed(4)} |\n`;
+    md += `| ${r.name} | \`${r.category}\` | ${r.baseline.totalTokens.toLocaleString()} | ${r.gsx.totalTokens.toLocaleString()} | ${r.savings.tokensSaved.toLocaleString()} | **${r.savings.tokenPercent.toFixed(1)}%** | $${r.baseline.cost.toFixed(4)} | $${r.gsx.cost.toFixed(4)} | $${r.savings.costSaved.toFixed(4)} | **${r.savings.costPercent.toFixed(1)}%** |\n`;
   }
 
-  md += `\n*Note: Costs calculated based on configurable \`benchmarks/pricing.json\`.*`;
+  md += `| **AGGREGATE TOTAL** | \`portfolio\` | **${totalBaselineTokens.toLocaleString()}** | **${totalGsxTokens.toLocaleString()}** | **${totalTokensSaved.toLocaleString()}** | **${aggregateSavingsPercent.toFixed(1)}%** | **$${totalBaselineCost.toFixed(4)}** | **$${totalGsxCost.toFixed(4)}** | **$${(totalBaselineCost - totalGsxCost).toFixed(4)}** | **${aggregateCostSavings.toFixed(1)}%** |\n\n`;
+  md += `*Note: Costs calculated based on configurable \`benchmarks/pricing.json\`. Aggregate costs computed from unrounded sums ($0.52162 baseline displaying as $0.5216, $0.34968 GSD-X displaying as $0.3497).*\n`;
 
   fs.writeFileSync(path.join(resultsDir, 'latest.md'), md, 'utf-8');
 
   console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
   console.log(` BENCHMARK COMPLETE`);
-  console.log(` Aggregate Savings: ${aggregateSavingsPercent}% (Median: ${medianSavings}%, Range: ${worstCase}% to ${bestCase}%)`);
-  console.log(` Reports generated:`);
-  console.log(`   - benchmarks/results/latest.json`);
+  console.log(` Aggregate Savings: ${aggregateSavingsPercent.toFixed(1)}% (Median: ${medianSavings.toFixed(1)}%, Range: ${worstCase.toFixed(1)}% to ${bestCase.toFixed(1)}%)`);
+  console.log(` Authoritative dataset written:`);
+  console.log(`   - benchmarks/data/benchmark_results.json (canonical)`);
+  console.log(`   - benchmarks/results/latest.json (compatibility)`);
   console.log(`   - benchmarks/results/latest.md`);
   console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`);
 

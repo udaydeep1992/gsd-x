@@ -1,7 +1,7 @@
 {
   "name": "@gsd-x/sdk",
   "version": "1.0.0",
-  "description": "GSD-X SDK: GSD, redesigned to save up to 67.5% of your tokens. Smart memory, intelligent context compression, adaptive token compilation, and code indexing for faster, more efficient long-running AI coding agents.",
+  "description": "GSD-X SDK: GSD, redesigned for a 67.5% aggregate token reduction across benchmark scenarios, with individual task savings reaching up to 83.0%. Smart memory, intelligent context compression, adaptive token compilation, and code indexing for faster, more efficient long-running AI coding agents.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

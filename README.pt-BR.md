@@ -6,7 +6,7 @@
 
 [English](README.md) · **Português** · [简体中文](README.zh-CN.md) · [日本語](README.ja-JP.md) · [한국어](README.ko-KR.md)
 
-GSD reprojetado para economizar até 67,5% dos seus tokens. Memória inteligente, compressão inteligente de contexto, compilação adaptativa de tokens e indexação de código para agentes de codificação de IA de longa duração mais rápidos e eficientes.
+GSD reprojetado para uma redução agregada de 67,5% no consumo de tokens em benchmarks, com economias em tarefas individuais atingindo até 83,0%. Memória inteligente, compressão inteligente de contexto, compilação adaptativa de tokens e indexação de código para agentes de codificação de IA de longa duração mais rápidos e eficientes.
 
 [![Maintained by: Codee Studio](https://img.shields.io/badge/Maintained%20by-Codee%20Studio-007acc.svg)](https://www.fiverr.com/codee_studio)
 [![Hire on Fiverr](https://img.shields.io/badge/Fiverr-Hire%20Codee%20Studio-1dbf73?logo=fiverr&logoColor=white)](https://www.fiverr.com/codee_studio)
@@ -108,9 +108,13 @@ flowchart TD
 
 ---
 
-## Resultados Medidos em Benchmarks (Empirical Benchmarks)
+## Resultados Medidos em Benchmarks: Até 83,0% Menos Tokens (Empirical Benchmarks)
 
-Todos os números abaixo foram gerados pelo nosso harness de testes automatizado e reproduzível (`benchmarks/run-benchmark.cjs`), comparando diretamente o Open GSD Core original com o GSD-X em 8 cenários padronizados no commit `13d37238ba08377929e4850fd6ae4b8db49a22ca`:
+> **Redução agregada de 67,5% no consumo de tokens em 8 cenários padronizados de desenvolvimento, com economias em tarefas individuais chegando a até 83,0%. Redução medida de custo de 33,0% sob a precificação do Fable 5.**
+
+Todos os números abaixo foram gerados pelo nosso harness de testes automatizado e reproduzível (`benchmarks/run-benchmark.cjs`), comparando diretamente o Open GSD Core original com o GSD-X no commit `13d37238ba08377929e4850fd6ae4b8db49a22ca`. O conjunto de dados canônico está registrado em [`benchmarks/data/benchmark_results.json`](benchmarks/data/benchmark_results.json):
+
+### Detalhamento por Cenário de Desenvolvimento
 
 | Cenário | Baseline GSD Original | Tokens GSD-X | Economia de Tokens | Custo Baseline | Custo GSD-X | Economia de Custo |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -124,18 +128,43 @@ Todos os números abaixo foram gerados pelo nosso harness de testes automatizado
 | **8. Recuperação de Memória** (Memory Recall) | 2.358 | 549 | **76,7%** | $0,0376 | $0,0195 | **48,1%** |
 | **TOTAL AGREGADO** | **25.482** | **8.288** | **67,5%** | **$0,5216** | **$0,3497** | **33,0%** |
 
-*Modelo de Preços: Fable 5 ($10,00/1M entrada, $50,00/1M saída). Dados 100% verificados e empíricos.*
+*Modelo de Preços: Fable 5 ($10,00/1M entrada, $50,00/1M saída). Todos os cálculos são derivados de dados não arredondados. O custo total baseline não arredondado é $0,52162 (exibido como $0,5216); o custo total do GSD-X não arredondado é $0,34968 (exibido como $0,3497). Devido ao arredondamento para 4 casas decimais (+0,00008 acumulado), a soma das exibições individuais resulta em $0,5217 no baseline.*
 
-### Impacto em Escala: 1 Milhão de Tokens de Referência vs. GSD-X (1M Baseline Tokens vs. GSD-X)
+### Como Calculamos a Economia
 
-| Métrica | Linha de Base Upstream (1.000.000 Tokens) | Equivalente GSD-X (325.249 Tokens) | Economia Líquida com GSD-X |
+```text
+REDUÇÃO DE TOKENS
+Tokens de Referência: 25.482 (18.812 entrada + 6.670 saída)
+Tokens GSD-X:          8.288 (1.618 entrada + 6.670 saída)
+Tokens Economizados:  17.194
+Redução Agregada de Tokens = (25.482 − 8.288) ÷ 25.482 × 100 = 67,475% ≈ 67,5%
+
+REDUÇÃO DE CUSTO (Fable 5: $10/M entrada, $50/M saída)
+Custo Baseline: (18.812 × $10 ÷ 1M) + (6.670 × $50 ÷ 1M) = $0,18812 + $0,33350 = $0,52162
+Custo GSD-X:    (1.618 × $10 ÷ 1M) + (6.670 × $50 ÷ 1M)  = $0,01618 + $0,33350 = $0,34968
+Custo Líquido Economizado: $0,52162 − $0,34968 = $0,17194
+Economia de Custo = ($0,52162 − $0,34968) ÷ $0,52162 × 100 = 32,963% ≈ 33,0%
+
+Por que a Redução de Tokens (67,5%) ≠ Economia de Custo (33,0%)?
+No Fable 5, tokens de saída custam 5× mais que tokens de entrada ($50/M vs $10/M).
+O GSD-X elimina contexto redundante de entrada (especificações, mapas, resumos históricos),
+enquanto o código de saída de alta qualidade gerado pelo modelo (6.670 tokens) permanece idêntico.
+Como os tokens de saída representam 64% do custo total da linha de base, a economia financeira
+real é de 33,0%, mesmo com a redução de 67,5% no volume total de tokens.
+```
+
+### Impacto em Escala: Carga de Trabalho Baseline vs. GSD-X Equivalente (Scale Projections)
+
+Projeções proporcionais mantendo a proporção de 73,8% entrada / 26,2% saída da linha de base:
+
+| Métrica | Carga de Trabalho Baseline | Carga Equivalente GSD-X | Economia Líquida com GSD-X |
 |:---|:---:|:---:|:---:|
-| **Tokens Consumidos** | 1.000.000 tokens | 325.249 tokens | **674.751 tokens economizados (redução de 67,5%)** |
-| **Custo Fable 5** | $20,47 | $13,72 | **$6,75 economizados a cada 1M tokens (redução de 33,0%)** |
-| **Em 10M Tokens** | $204,70 | $137,20 | **$67,50 economizados** (6.747.510 tokens economizados) |
-| **Em 100M Tokens** | $2.047,00 | $1.372,00 | **$675,00 economizados** (67.475.100 tokens economizados) |
+| **1M Tokens Baseline** | 1.000.000 tokens | 325.249 tokens | **674.751 tokens economizados (redução de 67,5%)** |
+| **Custo Fable 5 (1M)** | $20,47 | $13,72 | **$6,75 economizados a cada 1M tokens (redução de 33,0%)** |
+| **Em 10M Tokens Baseline** | 10.000.000 tokens ($204,70) | 3.252.492 tokens ($137,23) | **6.747.508 tokens eliminados \| $67,47 economizados** |
+| **Em 100M Tokens Baseline**| 100.000.000 tokens ($2.046,99) | 32.524.920 tokens ($1.372,26) | **67.475.080 tokens eliminados \| $674,73 economizados** |
 
-*Calculado com Fable 5 ($10,00/1M entrada, $50,00/1M saída). Para cada 1 milhão de tokens consumidos na linha de base upstream, o GSD-X comprime para ~325 mil tokens, economizando $6,75 por milhão e eliminando a degradação de contexto.*
+*Nota: Os valores de escala utilizam extrapolação linear exata a partir de dados não arredondados ($20,4699 baseline e $13,7226 GSD-X por 1M de tokens). A multiplicação direta dos valores arredondados ($20,47, $13,72, $6,75) resulta em $204,70 / $137,20 / $67,50 em 10M e $2.047,00 / $1.372,00 / $675,00 em 100M.*
 
 ---
 

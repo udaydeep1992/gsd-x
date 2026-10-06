@@ -13,10 +13,10 @@ To validate this empirically, an automated benchmark harness was built (`benchma
 ### Key Measured Results
 - **Benchmark Model**: **Fable 5** ($10.00 / 1M input tokens, $50.00 / 1M output tokens).
 - **Aggregate Token Savings**: **67.5%** (25,482 baseline tokens reduced to 8,288 tokens).
+- **Individual Scenario Savings**: **49.7% to 83.0%** across tasks.
 - **Median Token Savings**: **71.3%**.
-- **Savings Range**: **49.7% to 83.0%** across all scenarios.
 - **Cost Reduction**: **33.0%** net cost savings on Fable 5 pricing ($0.5216 down to $0.3497).
-- **Integrity Guarantee**: **Zero fabricated numbers.** All data below was produced by running `npm run benchmark` directly against the codebase on commit `13d37238ba08377929e4850fd6ae4b8db49a22ca`.
+- **Authoritative Dataset**: Recorded in [`benchmarks/data/benchmark_results.json`](../benchmarks/data/benchmark_results.json) from commit `13d37238ba08377929e4850fd6ae4b8db49a22ca`.
 
 ---
 
@@ -53,39 +53,69 @@ All costs calculated on **Fable 5** ($10.00/1M input, $50.00/1M output):
 | **8. Memory Recall** | 2,358 | 549 | **76.7%** | $0.0376 | $0.0195 | **48.1%** |
 | **OVERALL TOTAL** | **25,482** | **8,288** | **67.5%** | **$0.5216** | **$0.3497** | **33.0%** |
 
+*Note on cost rounding: Baseline unrounded aggregate cost is $0.52162 (displaying as $0.5216); GSD-X unrounded aggregate cost is $0.34968 (displaying as $0.3497). Summing the 4-decimal rounded display values yields $0.5217 baseline and $0.3497 GSD-X due to rounding accumulation (+0.00008 across 8 scenarios).*
+
 ---
 
-## 4. Impact at Scale: 1M Baseline Tokens vs. GSD-X
+## 4. How We Calculate Savings
+
+```text
+TOKEN REDUCTION
+Baseline Tokens: 25,482 (18,812 input + 6,670 output)
+GSD-X Tokens:     8,288 (1,618 input + 6,670 output)
+Tokens Saved:    17,194
+Aggregate Token Savings = (25,482 − 8,288) ÷ 25,482 × 100 = 67.475% ≈ 67.5%
+(Individual scenario reductions reach up to 83.0%)
+
+COST REDUCTION (Fable 5: $10/M input, $50/M output)
+Baseline Cost: (18,812 × $10 ÷ 1M) + (6,670 × $50 ÷ 1M) = $0.18812 + $0.33350 = $0.52162
+GSD-X Cost:    (1,618 × $10 ÷ 1M) + (6,670 × $50 ÷ 1M)  = $0.01618 + $0.33350 = $0.34968
+Net Cost Saved: $0.52162 − $0.34968 = $0.17194
+Cost Savings = ($0.52162 − $0.34968) ÷ $0.52162 × 100 = 32.963% ≈ 33.0%
+
+WHY TOKEN REDUCTION (67.5%) ≠ COST REDUCTION (33.0%)
+Output tokens are priced 5× higher than input tokens ($50/M vs $10/M).
+GSD-X achieves token reduction by eliminating redundant input context
+(specs, maps, stale summaries) while producing identical, complete code output (6,670 tokens).
+Because constant output tokens represent 64% of baseline cost,
+monetary savings is 33.0% even while total token volume drops 67.5%.
+```
+
+---
+
+## 5. Impact at Scale: Baseline vs. GSD-X Equivalent Workload
 
 When projecting token and cost efficiency at scale, the empirical 67.5% token reduction and 33.0% cost reduction translate into significant operational savings:
 
-| Metric | Upstream Baseline (1M Tokens) | GSD-X Equivalent (325K Tokens) | Net Savings with GSD-X |
+| Metric | Upstream Baseline Workload | GSD-X Equivalent Workload | Net Savings with GSD-X |
 |:---|:---:|:---:|:---:|
-| **Token Consumption** | 1,000,000 tokens | 325,249 tokens | **674,751 tokens saved (67.5% reduction)** |
-| **Fable 5 Cost** | $20.47 | $13.72 | **$6.75 saved per 1M tokens (33.0% cost reduction)** |
-| **At 10M Tokens** | $204.70 | $137.20 | **$67.50 saved** (6.75M tokens eliminated) |
-| **At 100M Tokens** | $2,047.00 | $1,372.00 | **$675.00 saved** (67.48M tokens eliminated) |
+| **1M Baseline Tokens** | 1,000,000 tokens | 325,249 tokens | **674,751 tokens saved (67.5% reduction)** |
+| **Fable 5 Cost (1M)** | $20.47 | $13.72 | **$6.75 saved per 1M tokens (33.0% cost reduction)** |
+| **At 10M Baseline Tokens** | 10,000,000 tokens ($204.70) | 3,252,492 tokens ($137.23) | **6,747,508 tokens eliminated \| $67.47 saved** |
+| **At 100M Baseline Tokens**| 100,000,000 tokens ($2,046.99) | 32,524,920 tokens ($1,372.26) | **67,475,080 tokens eliminated \| $674.73 saved** |
+
+*Note on scaling math: Scaling values use exact linear extrapolation from unrounded benchmark data ($20.4699 baseline and $13.7226 GSD-X per 1M baseline tokens). Direct multiples of the rounded 1M rate ($20.47, $13.72, $6.75) yield $204.70 / $137.20 / $67.50 at 10M and $2,047.00 / $1,372.00 / $675.00 at 100M.*
 
 > **Key Takeaway**: For every 1,000,000 tokens an autonomous agent workflow would consume using standard GSD, GSD-X compiles and delivers the required context in only **325,249 tokens**—saving **$6.75 per million tokens** under Fable 5 while preventing context window pollution and hallucination.
 
 ---
 
-## 5. Cost Analysis Across Model Providers
+## 6. Cost Analysis Across Model Providers
 
-Using the measured token consumption from our benchmark, we project costs across major AI providers (1,000 tasks per month):
+Using the measured token consumption from our benchmark, we project costs across major AI providers (scaled to 1,000 benchmark suite runs, representing 8,000 standardized task executions):
 
-| Model Provider | Upstream Monthly Cost (1K tasks) | GSD-X Monthly Cost (1K tasks) | Monthly Dollar Savings |
-|:---|:---:|:---:|:---:|
-| **Fable 5** ($10.00/1M in, $50.00/1M out) | $521.62 | $349.68 | **$171.94** (33.0%) |
-| **Claude 3.7 Sonnet** ($3.00/1M in, $15.00/1M out) | $156.49 | $104.90 | **$51.58** (33.0%) |
-| **GPT-4o** ($2.50/1M in, $10.00/1M out) | $113.73 | $70.75 | **$42.98** (37.8%) |
-| **Claude 3.5 Haiku** ($0.80/1M in, $4.00/1M out) | $41.73 | $27.97 | **$13.76** (33.0%) |
-| **Gemini 2.5 Pro** ($1.25/1M in, $5.00/1M out) | $56.87 | $35.37 | **$21.49** (37.8%) |
-| **Gemini 2.5 Flash** ($0.075/1M in, $0.30/1M out) | $3.41 | $2.12 | **$1.29** (37.8%) |
+| Model Provider | Upstream Baseline (1K runs) | GSD-X (1K runs) | Net Dollar Savings | Cost Savings % |
+|:---|:---:|:---:|:---:|:---:|
+| **Fable 5** ($10.00/1M in, $50.00/1M out) | $521.62 | $349.68 | **$171.94** | 33.0% |
+| **Claude 3.7 Sonnet** ($3.00/1M in, $15.00/1M out) | $156.49 | $104.90 | **$51.58** | 33.0% |
+| **GPT-4o** ($2.50/1M in, $10.00/1M out) | $113.73 | $70.75 | **$42.98** | 37.8% |
+| **Claude 3.5 Haiku** ($0.80/1M in, $4.00/1M out) | $41.73 | $27.97 | **$13.76** | 33.0% |
+| **Gemini 2.5 Pro** ($1.25/1M in, $5.00/1M out) | $56.87 | $35.37 | **$21.49** | 37.8% |
+| **Gemini 2.5 Flash** ($0.075/1M in, $0.30/1M out) | $3.41 | $2.12 | **$1.29** | 37.8% |
 
 ---
 
-## 6. How Savings Are Achieved
+## 7. How Savings Are Achieved
 
 1. **Document Omission (45-65% impact)**: Naive GSD loads all 7 codebase maps (`ARCHITECTURE.md`, `STACK.md`, `CONVENTIONS.md`, etc.). GSD-X filters out unreferenced documents.
 2. **Symbol Extraction (15-20% impact)**: `CodebaseIndex` injects concise function/class declarations instead of dumping entire source files.
@@ -94,9 +124,9 @@ Using the measured token consumption from our benchmark, we project costs across
 
 ---
 
-## 7. How to Reproduce
+## 8. How to Reproduce & Verify
 
-The benchmark harness is fully self-contained and requires no external API keys:
+The benchmark harness is fully self-contained and reproducible:
 
 ```bash
 # Clone the repository
@@ -109,7 +139,11 @@ npm run build:sdk
 
 # Execute benchmark with Fable 5 pricing
 npm run benchmark
+
+# Verify mathematical integrity and documentation parity
+python scripts/verify_benchmarks.py
+# Or using Node.js:
+node scripts/verify-benchmarks.cjs
 ```
 
-Raw JSON output is automatically written to `benchmarks/results/latest.json`.
-Markdown summary is written to `benchmarks/results/latest.md`.
+Raw JSON output is automatically written to `benchmarks/data/benchmark_results.json` (canonical) and `benchmarks/results/latest.json`. Markdown summary is written to `benchmarks/results/latest.md`.

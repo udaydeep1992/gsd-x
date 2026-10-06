@@ -93,18 +93,20 @@ All figures below are from our automated, reproducible benchmark harness (`bench
 | **Memory Recall** | 2,358 | 549 | **76.7%** | $0.0376 | $0.0195 | **48.1%** |
 | **TOTAL / AGGREGATE** | **25,482** | **8,288** | **67.5%** | **$0.5216** | **$0.3497** | **33.0%** |
 
-*Pricing Model: Fable 5 ($10.00/1M input, $50.00/1M output). Benchmarked on commit `13d37238ba08377929e4850fd6ae4b8db49a22ca`.*
+*Pricing Model: Fable 5 ($10.00/1M input, $50.00/1M output). Benchmarked on commit `13d37238ba08377929e4850fd6ae4b8db49a22ca`. Canonical data in `benchmarks/data/benchmark_results.json`. Aggregate costs are computed from unrounded sums ($0.52162 baseline displaying as $0.5216, $0.34968 GSD-X displaying as $0.3497); the sum of 4-decimal rounded scenario displays is $0.5217 baseline and $0.3497 GSD-X.*
 
 ---
 
-## 5. Running the Token Benchmark
+## 5. Running & Verifying the Token Benchmark
 
-You can reproduce these exact measurements on your own machine at any time:
+You can reproduce and verify these exact measurements on your own machine at any time:
 
 ```bash
 # Run benchmark with default pricing
 npm run benchmark
 
-# Or run directly via node
-node benchmarks/run-benchmark.cjs
+# Verify mathematical integrity and parity against canonical data
+python scripts/verify_benchmarks.py
+# Or with Node.js:
+node scripts/verify-benchmarks.cjs
 ```

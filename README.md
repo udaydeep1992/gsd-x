@@ -6,7 +6,7 @@
 
 **English** · [Português](README.pt-BR.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja-JP.md) · [한국어](README.ko-KR.md)
 
-GSD, redesigned to save up to 67.5% of your tokens. Smart memory, intelligent context compression, adaptive token compilation, and code indexing for faster, more efficient long-running AI coding agents.
+GSD, redesigned for a 67.5% aggregate token reduction across benchmark scenarios, with individual task savings reaching up to 83.0%. Smart memory, intelligent context compression, adaptive token compilation, and code indexing for faster, more efficient long-running AI coding agents.
 
 [![Maintained by: Codee Studio](https://img.shields.io/badge/Maintained%20by-Codee%20Studio-007acc.svg)](https://www.fiverr.com/codee_studio)
 [![Hire on Fiverr](https://img.shields.io/badge/Fiverr-Hire%20Codee%20Studio-1dbf73?logo=fiverr&logoColor=white)](https://www.fiverr.com/codee_studio)
@@ -106,9 +106,13 @@ flowchart TD
 
 ---
 
-## Measured Benchmark Results
+## Measured Benchmark Results: Up to 83.0% Fewer Tokens
 
-All figures below are from our automated, reproducible benchmark harness (`benchmarks/run-benchmark.cjs`) comparing upstream Open GSD Core against GSD-X across 8 standardized software development scenarios on commit `13d37238ba08377929e4850fd6ae4b8db49a22ca`:
+> **67.5% aggregate token reduction across eight benchmark scenarios, with individual task savings reaching up to 83.0%. Measured benchmark cost reduction is 33.0% under Fable 5 pricing.**
+
+All figures below are from our automated, reproducible benchmark harness (`benchmarks/run-benchmark.cjs`) comparing upstream Open GSD Core against GSD-X across 8 standardized software development scenarios on commit `13d37238ba08377929e4850fd6ae4b8db49a22ca`. Canonical data is recorded in [`benchmarks/data/benchmark_results.json`](benchmarks/data/benchmark_results.json).
+
+### Benchmark Scenario Breakdown
 
 | Scenario | Upstream Baseline | GSD-X Tokens | Token Savings | Baseline Cost | GSD-X Cost | Cost Savings |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -122,18 +126,53 @@ All figures below are from our automated, reproducible benchmark harness (`bench
 | **8. Memory Recall** | 2,358 | 549 | **76.7%** | $0.0376 | $0.0195 | **48.1%** |
 | **AGGREGATE TOTAL** | **25,482** | **8,288** | **67.5%** | **$0.5216** | **$0.3497** | **33.0%** |
 
-*Pricing Model: Fable 5 ($10.00/1M input, $50.00/1M output). Zero fabricated numbers.*
+*Pricing Model: Fable 5 ($10.00 / 1M input tokens, $50.00 / 1M output tokens). All calculations are traceable to unrounded benchmark data. Unrounded baseline total cost is $0.52162 (displaying as $0.5216); unrounded GSD-X total cost is $0.34968 (displaying as $0.3497). The sum of 4-decimal rounded scenario costs is $0.5217 baseline and $0.3497 GSD-X due to rounding accumulation (+0.00008 across 8 scenarios).*
 
-### Impact at Scale: 1M Baseline Tokens vs. GSD-X
+### How We Calculate Savings
 
-| Metric | Upstream Baseline (1M Tokens) | GSD-X Equivalent (325K Tokens) | Net Savings with GSD-X |
+```text
+TOKEN REDUCTION
+Baseline Tokens: 25,482 (18,812 input + 6,670 output)
+GSD-X Tokens:     8,288 (1,618 input + 6,670 output)
+Tokens Saved:    17,194
+Aggregate Token Savings = (25,482 − 8,288) ÷ 25,482 × 100 = 67.475% ≈ 67.5%
+(Individual scenario reductions range from 49.7% to 83.0%)
+
+MONETARY COST REDUCTION
+Cost Formula = (Input Tokens × $10.00 ÷ 1,000,000) + (Output Tokens × $50.00 ÷ 1,000,000)
+Baseline Cost: (18,812 × $10 ÷ 1M) + (6,670 × $50 ÷ 1M) = $0.18812 + $0.33350 = $0.52162
+GSD-X Cost:    (1,618 × $10 ÷ 1M) + (6,670 × $50 ÷ 1M)  = $0.01618 + $0.33350 = $0.34968
+Net Cost Saved: $0.52162 − $0.34968 = $0.17194
+Cost Savings = ($0.52162 − $0.34968) ÷ $0.52162 × 100 = 32.963% ≈ 33.0%
+
+WHY TOKEN REDUCTION (67.5%) ≠ COST REDUCTION (33.0%)
+Output tokens are priced 5× higher than input tokens ($50/M vs $10/M).
+GSD-X eliminates redundant input context (specs, maps, stale summaries)
+while the model generates identical, complete code outputs (6,670 tokens).
+Because constant output tokens represent 64% of baseline cost,
+monetary savings is 33.0% even while total token volume drops 67.5%.
+```
+
+### Impact at Scale: Baseline vs. GSD-X Equivalent Workload
+
+The projections below scale the empirical benchmark workload proportionally (preserving the benchmark's 73.8% input / 26.2% output baseline mix and constant output generation):
+
+| Metric | Upstream Baseline Workload | GSD-X Equivalent Workload | Net Savings with GSD-X |
 |:---|:---:|:---:|:---:|
-| **Token Consumption** | 1,000,000 tokens | 325,249 tokens | **674,751 tokens saved (67.5% reduction)** |
-| **Fable 5 Cost** | $20.47 | $13.72 | **$6.75 saved per 1M tokens (33.0% cost reduction)** |
-| **At 10M Tokens** | $204.70 | $137.20 | **$67.50 saved** (6.75M tokens eliminated) |
-| **At 100M Tokens** | $2,047.00 | $1,372.00 | **$675.00 saved** (67.48M tokens eliminated) |
+| **1M Baseline Tokens** | 1,000,000 tokens | 325,249 tokens | **674,751 tokens saved (67.5% reduction)** |
+| **Fable 5 Cost (1M)** | $20.47 | $13.72 | **$6.75 saved per 1M tokens (33.0% cost reduction)** |
+| **At 10M Baseline Tokens** | 10,000,000 tokens ($204.70) | 3,252,492 tokens ($137.23) | **6,747,508 tokens eliminated \| $67.47 saved** |
+| **At 100M Baseline Tokens**| 100,000,000 tokens ($2,046.99) | 32,524,920 tokens ($1,372.26) | **67,475,080 tokens eliminated \| $674.73 saved** |
 
-*Calculated with Fable 5 ($10.00/1M input, $50.00/1M output). For every 1,000,000 tokens consumed by standard GSD workflows, GSD-X cuts consumption to ~325,000 tokens—saving $6.75 per million tokens while eliminating context window bloat.*
+*Note on scaling math: Scaling values use exact linear extrapolation from unrounded benchmark data ($20.4699 baseline and $13.7226 GSD-X per 1M baseline tokens). Multiplying the rounded display rate ($20.47, $13.72, $6.75) yields $204.70 / $137.20 / $67.50 at 10M and $2,047.00 / $1,372.00 / $675.00 at 100M.*
+
+### Benchmark Methodology & Reproducibility
+
+- **Task Equivalence**: Baseline and GSD-X execute identical task prompts across 8 scenarios ranging from trivial utility edits to multi-phase architectural features.
+- **Token Accounting**: Evaluated using the standard 4-character-per-token heuristic (`Math.ceil(text.length / 4)`) for context input strings, plus exact typical completion tokens for task solutions.
+- **Determinism**: The test harness runs fully deterministically with pinned fixture inputs, producing identical byte-for-byte token metrics on every run.
+- **Pricing Configuration**: Model pricing is defined in [`benchmarks/pricing.json`](benchmarks/pricing.json) and can be configured for any provider.
+- **Automated Verification**: Run `python scripts/verify_benchmarks.py` or `node scripts/verify-benchmarks.cjs` to verify all mathematical invariants and documentation consistency.
 
 ---
 

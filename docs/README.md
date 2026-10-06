@@ -19,7 +19,7 @@ Language versions: [English](README.md) · [Português (pt-BR)](pt-BR/README.md)
 - [Context Compiler](CONTEXT-COMPILER.md) — 8-stage intelligence pipeline, adaptive token budgeting, document omission, and semantic deduplication
 - [Token Optimization](TOKEN-OPTIMIZATION.md) — The five levers of context reduction and quantitative impact
 - [Google Antigravity Integration](ANTIGRAVITY.md) — Running GSD-X with Antigravity slash commands and subagents
-- [Empirical Benchmarks](BENCHMARKS.md) — 8-scenario benchmark methodology, raw measurements, and 67.5% token cost savings
+- [Empirical Benchmarks](BENCHMARKS.md) — 8-scenario benchmark methodology, raw measurements, 67.5% token reduction, and 33.0% cost savings
 - [Security & Privacy](SECURITY.md) — Prompt injection delimiters, automated secret redaction, and local execution boundaries
 - [Migration Guide](MIGRATION.md) — Seamless upgrade paths from Open GSD Core, GSD v1, and GSD v2
 
