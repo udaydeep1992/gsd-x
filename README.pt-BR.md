@@ -6,7 +6,7 @@
 
 [English](README.md) · **Português** · [简体中文](README.zh-CN.md) · [日本語](README.ja-JP.md) · [한국어](README.ko-KR.md)
 
-Uma evolução otimizada e com percepção de memória do Open GSD Core para desenvolvimento contínuo de software com IA — combinando planejamento e verificação disciplinados com memória semântica de projeto local-first, compilação inteligente de contexto, recuperação orientada a código, orçamentos adaptativos de tokens e roteamento ciente de modelos.
+GSD reprojetado para economizar até 67,5% dos seus tokens. Memória inteligente, compressão inteligente de contexto, compilação adaptativa de tokens e indexação de código para agentes de codificação de IA de longa duração mais rápidos e eficientes.
 
 [![Maintained by: Codee Studio](https://img.shields.io/badge/Maintained%20by-Codee%20Studio-007acc.svg)](https://www.fiverr.com/codee_studio)
 [![Hire on Fiverr](https://img.shields.io/badge/Fiverr-Hire%20Codee%20Studio-1dbf73?logo=fiverr&logoColor=white)](https://www.fiverr.com/codee_studio)

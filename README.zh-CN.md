@@ -6,7 +6,7 @@
 
 [English](README.md) · [Português](README.pt-BR.md) · **简体中文** · [日本語](README.ja-JP.md) · [한국어](README.ko-KR.md)
 
-专为长期运行的 AI 软件开发打造的高性能、记忆感知型 Open GSD Core 演进版本——将严格的规格驱动规划与验证，与本地优先语义记忆、智能上下文编译、代码感知检索、自适应 Token 预算及模型感知路由完美结合。
+GSD 经过深度重构，最高可节省 67.5% 的 Token。具备智能记忆、智能上下文压缩、自适应 Token 编译与代码索引，为长期运行的 AI 编程 Agent 提供更快、更高能效的开发体验。
 
 [![Maintained by: Codee Studio](https://img.shields.io/badge/Maintained%20by-Codee%20Studio-007acc.svg)](https://www.fiverr.com/codee_studio)
 [![Hire on Fiverr](https://img.shields.io/badge/Fiverr-Hire%20Codee%20Studio-1dbf73?logo=fiverr&logoColor=white)](https://www.fiverr.com/codee_studio)

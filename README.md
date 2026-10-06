@@ -6,7 +6,7 @@
 
 **English** · [Português](README.pt-BR.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja-JP.md) · [한국어](README.ko-KR.md)
 
-An optimized, memory-aware evolution of Open GSD Core for long-running AI software development—combining disciplined planning and verification with semantic project memory, intelligent context compilation, code-aware retrieval, adaptive token budgets, and model-aware routing.
+GSD, redesigned to save up to 67.5% of your tokens. Smart memory, intelligent context compression, adaptive token compilation, and code indexing for faster, more efficient long-running AI coding agents.
 
 [![Maintained by: Codee Studio](https://img.shields.io/badge/Maintained%20by-Codee%20Studio-007acc.svg)](https://www.fiverr.com/codee_studio)
 [![Hire on Fiverr](https://img.shields.io/badge/Fiverr-Hire%20Codee%20Studio-1dbf73?logo=fiverr&logoColor=white)](https://www.fiverr.com/codee_studio)

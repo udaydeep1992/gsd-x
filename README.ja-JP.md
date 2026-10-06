@@ -6,7 +6,7 @@
 
 [English](README.md) · [Português](README.pt-BR.md) · [简体中文](README.zh-CN.md) · **日本語** · [한국어](README.ko-KR.md)
 
-長期運用される AI ソフトウェア開発のために設計された、高性能かつメモリ認識型の Open GSD Core 進化版——規律ある仕様駆動の計画と検証に、ローカルファーストのセマンティックプロジェクトメモリ、インテリジェントなコンテキストコンパイル、コード認識型検索、適応型トークンバジェット、およびモデル認識ルーティングを融合。
+最大67.5%のトークンを削減するように再設計されたGSD。スマートメモリ、インテリジェントなコンテキスト圧縮、適応型トークンコンパイル、およびコードインデックスにより、長期運用されるAIコーディングエージェントをより高速かつ高効率に支援します。
 
 [![Maintained by: Codee Studio](https://img.shields.io/badge/Maintained%20by-Codee%20Studio-007acc.svg)](https://www.fiverr.com/codee_studio)
 [![Hire on Fiverr](https://img.shields.io/badge/Fiverr-Hire%20Codee%20Studio-1dbf73?logo=fiverr&logoColor=white)](https://www.fiverr.com/codee_studio)

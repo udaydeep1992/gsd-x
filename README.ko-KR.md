@@ -6,7 +6,7 @@
 
 [English](README.md) · [Português](README.pt-BR.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja-JP.md) · **한국어**
 
-장기 실행 AI 소프트웨어 개발을 위해 최적화된, 메모리 인식형 Open GSD Core 진화 버전—규율 있는 스펙 기반 계획 및 검증과 로컬 우선 시맨틱 프로젝트 메모리, 지능형 컨텍스트 컴파일, 코드 인식 검색, 적응형 토큰 예산, 모델 인식 라우팅의 결합.
+토큰을 최대 67.5%까지 절약하도록 재설계된 GSD. 스마트 메모리, 지능형 컨텍스트 압축, 적응형 토큰 컴파일 및 코드 인덱싱을 통해 장기 실행 AI 코딩 에이전트를 더 빠르고 효율적으로 지원합니다.
 
 [![Maintained by: Codee Studio](https://img.shields.io/badge/Maintained%20by-Codee%20Studio-007acc.svg)](https://www.fiverr.com/codee_studio)
 [![Hire on Fiverr](https://img.shields.io/badge/Fiverr-Hire%20Codee%20Studio-1dbf73?logo=fiverr&logoColor=white)](https://www.fiverr.com/codee_studio)
