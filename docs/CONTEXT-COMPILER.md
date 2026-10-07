@@ -13,9 +13,9 @@ In naive AI agent systems, tasks are executed by concatenating the entire projec
 - Complete session transcripts
 
 This leads directly to:
-1. **Severe Token Bloat**: Costs explode by 300% to 500%.
-2. **Context Degradation & Amnesia**: Attention mechanisms lose focus on the actual instructions amidst thousands of lines of irrelevant specs.
-3. **Instruction Confusion**: Stale or historical planning notes conflict with the current task.
+1. **Token Bloat**: Large inputs consume more of the model's context window.
+2. **Context Degradation**: Irrelevant specifications can obscure task-specific information.
+3. **Instruction Confusion**: Stale or historical planning notes can conflict with the current task.
 
 **The Context Compiler solves this** by treating context as a compiled artifact rather than a raw dump.
 
@@ -66,8 +66,8 @@ This leads directly to:
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
 │ 7. Strict Budget Enforcement                                │
-│    • Calculate total estimated tokens                       │
-│    • Trim lowest priority items if budget is exceeded       │
+│    • Measure the rendered brief token estimate              │
+│    • Trim optional context until it fits, or report overflow│
 └─────────────────────────────┬───────────────────────────────┘
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
@@ -91,10 +91,8 @@ Rather than allowing arbitrary prompt sizes, GSD-X establishes deterministic bud
 | **Large** | 24,000 tokens | Cross-cutting features, integration refactors |
 | **Architectural**| 32,000 tokens | System redesign, database migration, protocol overhaul |
 
-### Budget Allocation Proportions
-- **Planning & Specs**: 40% of budget
-- **Code Context**: 35% of budget
-- **Memory & Decisions**: 25% of budget
+### Budget Enforcement
+Planning, code, and memory use soft proportional allocations. The compiler enforces the ceiling by measuring the rendered brief; required planning artifacts are preserved, and an explicit overflow decision is recorded if required content plus the task wrapper alone exceed the budget.
 
 ---
 
@@ -116,7 +114,7 @@ Instead of dumping whole source files into prompts:
 - Tracks file modification times (`mtime`) and SHA-256 hashes.
 - Parses and indexes classes, methods, functions, interfaces, and type aliases.
 - Extracts only the relevant declaration signature and docstrings for the task at hand.
-- Typical reduction: **90% token savings** over reading full source files.
+- Token savings depend on the selected symbols and are recorded per compilation; no fixed reduction is guaranteed.
 
 ---
 
@@ -168,4 +166,74 @@ Deduplicated:      860 tokens saved (4 redundant facts collapsed)
 Omitted:           5 documents filtered for low relevance
 Memory Used:       3 entries
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+---
+
+## 8. Structural Code Intelligence: Tree-sitter AST Slicing
+
+GSD-X Phase 1 introduces deterministic, grammar-accurate symbol extraction and caller/callee dependency mapping via pure WebAssembly Tree-sitter parsers (`web-tree-sitter`):
+
+- **Supported Languages**: Rust (`.rs`), Go (`.go`), C++ (`.cpp`, `.cc`, `.cxx`, `.hpp`, `.h`), plus a resilient fallback regex scanner for other extensions.
+- **Symbol Slice Extraction**: Instead of loading entire 1,000-line source files into agent context, the AST index extracts only the target function/struct/class, its signature, docstring, and immediate callers.
+- **Deterministic Token Savings**: Typical symbol slicing eliminates 80–95% of code token overhead per query while providing higher structural precision.
+- **Incremental Cache**: Fast SHA-256 and `mtimeMs` cache stored in `.gsd/ast-index.json`.
+
+```bash
+# Build or incrementally update AST index
+node gsd-core/bin/gsd-tools.cjs gsd-ast-index [--rebuild]
+
+# Display AST indexing metrics and language distribution
+node gsd-core/bin/gsd-tools.cjs gsd-ast-stats
+
+# Query AST symbols (positional or flags)
+node gsd-core/bin/gsd-tools.cjs gsd-ast-query authenticate_user --lang rust
+node gsd-core/bin/gsd-tools.cjs ast query --query "authenticate_user" --lang rust
+
+# Inspect structural call graph relationships (callers, impls, methods)
+node gsd-core/bin/gsd-tools.cjs gsd-ast-relationships authenticate_user
+node gsd-core/bin/gsd-tools.cjs gsd-ast-graph JwtVerifier
+```
+
+---
+
+## 9. Visual Context Inspector Web UI for Antigravity
+
+Phase 2 equips Antigravity users with a visual, interactive observability dashboard for real-time and post-hoc context inspection:
+
+- **Interactive Local HTTP Server**: Zero external cloud dependencies; runs on `http://127.0.0.1:8765`.
+- **KPI Metrics Dashboard**: Immediate visibility into raw candidate tokens, compiled context tokens, tokens saved, and compression percentage.
+- **5-Stage Pipeline Flow**: Traces token counts across Raw Candidates -> AST Filtering -> Task Selection -> Memory Substitution -> Final Brief Compilation.
+- **"Why Selected?" Explanations**: Inspects every candidate with explicit justification badges (e.g. `Exact AST function match`, `Active ADR decision`, `Relevance: 0.95`).
+- **Rejected Candidates Log**: Transparent log of filtered files with rejection stages and reasons (e.g. `Below relevance cutoff`, `Duplicate content hash`).
+- **Side-by-Side Context Diff**: Compares full candidate files against compiled symbol slices.
+
+```bash
+# Generate offline HTML dashboard
+node gsd-core/bin/gsd-tools.cjs context inspect --task "Implement Tree-sitter AST queries"
+
+# Launch live inspector server and auto-open in browser
+node gsd-core/bin/gsd-tools.cjs context inspect --serve --open --port 8765
+
+# Export self-contained HTML report
+node gsd-core/bin/gsd-tools.cjs context inspect --export reports/context-audit.html
+```
+
+---
+
+## 10. Persistent Engineering Intelligence: Cross-Project Heuristics
+
+Phase 3 introduces cross-project heuristics cross-pollination with strict privacy boundaries:
+
+- **Strict Privacy Isolation**: Multi-pass sanitizer strips credentials, API keys, URLs, absolute/relative paths, database schemas, and proprietary project names. Cryptographic key material is hard-blocked.
+- **Corroboration Engine**: When multiple distinct projects observe the same failure mode or optimization pattern, the global store increment evidence counters and boosts confidence without revealing project identities (anonymous salted SHA-256 project hashes).
+- **Bayesian Confidence Calibration**: Dynamic scoring incorporating evidence volume, multi-project corroboration, and empirical task feedback (successes vs failures).
+- **Curated Base Patterns**: Pre-seeded with verified patterns for async Rust deadlock prevention, Go timer allocation leaks, modern C++ `std::scoped_lock` safety, and SQLite transaction batching.
+
+```bash
+# Query relevant cross-project heuristics for a task
+node gsd-core/bin/gsd-tools.cjs heuristics query --task "Fix mutex deadlock in tokio worker"
+
+# Record task feedback to reinforce empirical confidence
+node gsd-core/bin/gsd-tools.cjs heuristics feedback --id "heur-rust-tokio-mutex" --success
 ```

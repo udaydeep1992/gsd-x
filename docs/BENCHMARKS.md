@@ -1,28 +1,28 @@
-# GSD-X Benchmark Report: Token & Cost Efficiency
+# GSD-X Deterministic Fixture Estimates
 
-> **Empirical Validation**: Real, reproducible token and cost measurements comparing upstream Open GSD Core with GSD-X across 8 standardized software engineering scenarios on **Fable 5**.
+> **Method limits**: Simulated estimates from a synthetic corpus. The runner does not execute GSD-X, an upstream agent, or a model. Input counts use a four-characters-per-token heuristic; output token counts are fixed fixture assumptions and prices are configurable. Results are not measured performance or a production savings guarantee.
 
 ---
 
 ## 1. Executive Summary
 
-GSD-X was designed to prove that **semantic memory and intelligent context compilation can replace redundant context, rather than simply adding more context**.
+The fixtures illustrate a hypothesis that **semantic memory and context compilation can replace redundant context**; validating it requires measured runs against real task inputs and agents.
 
-To validate this empirically, an automated benchmark harness was built (`benchmarks/run-benchmark.cjs`) that executes identical software development scenarios through both upstream GSD and GSD-X pipelines.
+The deterministic fixture harness (`benchmarks/run-benchmark.cjs`) builds synthetic prompts for baseline and GSD-X-style context; it does not execute either software pipeline or an AI model.
 
-### Key Measured Results
+### Fixture-Derived Estimates
 - **Benchmark Model**: **Fable 5** ($10.00 / 1M input tokens, $50.00 / 1M output tokens).
 - **Aggregate Token Savings**: **67.5%** (25,482 baseline tokens reduced to 8,288 tokens).
 - **Individual Scenario Savings**: **49.7% to 83.0%** across tasks.
 - **Median Token Savings**: **71.3%**.
 - **Cost Reduction**: **33.0%** net cost savings on Fable 5 pricing ($0.5216 down to $0.3497).
-- **Authoritative Dataset**: Recorded in [`benchmarks/data/benchmark_results.json`](../benchmarks/data/benchmark_results.json) from commit `13d37238ba08377929e4850fd6ae4b8db49a22ca`.
+- **Fixture Dataset**: Synthetic values stored in [`benchmarks/data/benchmark_results.json`](../benchmarks/data/benchmark_results.json); not an authoritative performance dataset.
 
 ---
 
 ## 2. Benchmark Scenarios
 
-The suite evaluates 8 distinct, realistic development scenarios:
+The fixture suite contains 8 representative task descriptions; scenario labels do not mean that tasks were executed:
 
 | # | Scenario ID | Description |
 |:---:|:---|:---|
@@ -37,7 +37,7 @@ The suite evaluates 8 distinct, realistic development scenarios:
 
 ---
 
-## 3. Detailed Measured Results
+## 3. Detailed Fixture Results
 
 All costs calculated on **Fable 5** ($10.00/1M input, $50.00/1M output):
 
@@ -85,7 +85,7 @@ monetary savings is 33.0% even while total token volume drops 67.5%.
 
 ## 5. Impact at Scale: Baseline vs. GSD-X Equivalent Workload
 
-When projecting token and cost efficiency at scale, the empirical 67.5% token reduction and 33.0% cost reduction translate into significant operational savings:
+When projecting token and cost efficiency at scale, the fixture-derived 67.5% token and 33.0% cost estimates can be linearly extrapolated for illustration; they are not an operational savings forecast:
 
 | Metric | Upstream Baseline Workload | GSD-X Equivalent Workload | Net Savings with GSD-X |
 |:---|:---:|:---:|:---:|
@@ -102,7 +102,7 @@ When projecting token and cost efficiency at scale, the empirical 67.5% token re
 
 ## 6. Cost Analysis Across Model Providers
 
-Using the measured token consumption from our benchmark, we project costs across major AI providers (scaled to 1,000 benchmark suite runs, representing 8,000 standardized task executions):
+Using fixture token estimates, this section illustrates pricing sensitivity across providers. It does not represent measured task executions:
 
 | Model Provider | Upstream Baseline (1K runs) | GSD-X (1K runs) | Net Dollar Savings | Cost Savings % |
 |:---|:---:|:---:|:---:|:---:|
@@ -115,18 +115,15 @@ Using the measured token consumption from our benchmark, we project costs across
 
 ---
 
-## 7. How Savings Are Achieved
+## 7. Context-Reduction Hypotheses in the Fixture
 
-1. **Document Omission (45-65% impact)**: Naive GSD loads all 7 codebase maps (`ARCHITECTURE.md`, `STACK.md`, `CONVENTIONS.md`, etc.). GSD-X filters out unreferenced documents.
-2. **Symbol Extraction (15-20% impact)**: `CodebaseIndex` injects concise function/class declarations instead of dumping entire source files.
-3. **Semantic Deduplication (5-10% impact)**: Identical project constraints across files are collapsed into single canonical statements.
-4. **Memory Substitution (10-15% impact)**: Compact 25-token memory facts substitute for repetitive historical re-analysis.
+The fixture models savings by omitting unrelated sample documents, replacing repeated full-file placeholders with short symbol placeholders, deduplicating repeated facts, and inserting compact memory examples. It does not measure the separate contribution of these techniques in the production compiler.
 
 ---
 
 ## 8. How to Reproduce & Verify
 
-The benchmark harness is fully self-contained and reproducible:
+The synthetic fixture harness is self-contained and reproducible:
 
 ```bash
 # Clone the repository
@@ -146,4 +143,4 @@ python scripts/verify_benchmarks.py
 node scripts/verify-benchmarks.cjs
 ```
 
-Raw JSON output is automatically written to `benchmarks/data/benchmark_results.json` (canonical) and `benchmarks/results/latest.json`. Markdown summary is written to `benchmarks/results/latest.md`.
+The runner emits synthetic fixture JSON and Markdown summaries; these are not production compiler or model measurements.

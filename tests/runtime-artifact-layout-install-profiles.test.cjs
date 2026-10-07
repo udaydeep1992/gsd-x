@@ -109,6 +109,34 @@ describe('stageSkillsForRuntimeAsSkills', () => {
     assert.ok(STAGED_DIRS.has(stagedDir), 'stagedDir must be in STAGED_DIRS');
   });
 
+  test('the root command becomes a managed unprefixed gsd front-door skill', (t) => {
+    const src = createTempDir('gsd-rta-root-');
+    let stagedDir;
+    t.after(() => {
+      cleanup(src);
+      if (stagedDir) cleanupStagedSkills();
+    });
+    fs.writeFileSync(path.join(src, 'root.md'), 'front door\n');
+    const converter = (content, skillName) => `${skillName}: ${content}`;
+    stagedDir = stageSkillsForRuntimeAsSkills(src, { skills: '*' }, converter, 'gsd-');
+    assert.deepStrictEqual(fs.readdirSync(stagedDir), ['gsd']);
+    assert.equal(fs.readFileSync(path.join(stagedDir, 'gsd', 'SKILL.md'), 'utf8'), 'gsd: front door\n');
+    assert.equal(fs.readFileSync(path.join(stagedDir, 'gsd', '.gsd-frontdoor'), 'utf8'), 'managed by GSD-X\n');
+  });
+
+  test('empty-prefix root stays in the bare-stem namespace', (t) => {
+    const src = createTempDir('gsd-rta-root-empty-');
+    let stagedDir;
+    t.after(() => {
+      cleanup(src);
+      if (stagedDir) cleanupStagedSkills();
+    });
+    fs.writeFileSync(path.join(src, 'root.md'), 'front door\n');
+    stagedDir = stageSkillsForRuntimeAsSkills(src, { skills: '*' }, content => content, '');
+    assert.deepStrictEqual(fs.readdirSync(stagedDir), ['root']);
+    assert.equal(fs.existsSync(path.join(stagedDir, 'root', '.gsd-frontdoor')), false);
+  });
+
   test('non-existent srcCommandsDir returns srcCommandsDir unchanged', () => {
     const ghost = path.join(os.tmpdir(), 'gsd-rta-no-exist-' + Date.now());
     const converter = (content, _skillName) => content;
@@ -336,17 +364,27 @@ describe('PROFILES map', () => {
     assert.ok('full' in PROFILES, 'PROFILES.full missing');
   });
 
-  test('PROFILES.core contains the 8 main-loop skills (including phase and surface)', () => {
+  test('PROFILES.core includes the concise front door and category commands alongside the main loop', () => {
     const core = PROFILES.core;
     assert.ok(Array.isArray(core), 'core should be an array');
     const sorted = [...core].sort();
     assert.deepStrictEqual(sorted, [
+      'build',
+      'context',
       'discuss-phase',
       'execute-phase',
       'help',
+      'idea',
+      'manage',
       'new-project',
+      'peer-review',
       'phase',
+      'plan',
       'plan-phase',
+      'project',
+      'review',
+      'root',
+      'run',
       'surface',
       'update',
     ]);

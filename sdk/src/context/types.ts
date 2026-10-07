@@ -4,6 +4,7 @@
 
 import { MemoryResult } from '../memory/types';
 import { SymbolInfo } from './code-index';
+import { ContextCompilationRecord } from './inspector/types';
 
 export type ContextPriority = 'required' | 'important' | 'optional' | 'redundant';
 
@@ -26,6 +27,8 @@ export interface CodeContext {
   content: string;
   estimatedTokens: number;
   relevanceReason: string;
+  originalTokens?: number;
+  tokensSaved?: number;
 }
 
 export interface ContextOmission {
@@ -80,6 +83,7 @@ export interface CompiledContext {
   estimatedTokens: number;
   manifest: ContextManifest;
   formattedBrief: string;
+  record?: ContextCompilationRecord;
 }
 
 export interface CompileOptions {

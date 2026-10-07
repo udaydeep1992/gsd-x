@@ -1,13 +1,22 @@
 /**
  * GSD-X Incremental Code Intelligence & Symbol Indexer
  *
- * Parses source code into symbols (functions, classes, methods, exports, interfaces),
+ * Integrates Tree-sitter AST structural intelligence with incremental regex fallback,
  * tracking file hashes and mtimes for ultra-fast incremental re-indexing.
  */
 
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
+import { AstCodebaseIndex } from './ast/ast-index';
+import { writeFileAtomic } from './atomic-file';
+import {
+  SymbolNode,
+  AstRelationship,
+  SymbolTokenMetrics,
+  SymbolQuery,
+  RelationshipKind,
+} from './ast/types';
 
 export interface SymbolInfo {
   name: string;
@@ -16,6 +25,8 @@ export interface SymbolInfo {
   startLine: number;
   endLine: number;
   signature: string;
+  qualifiedName?: string;
+  parentSymbol?: string;
 }
 
 export interface FileIndexEntry {
@@ -31,6 +42,7 @@ export interface FileIndexEntry {
 export interface CodeIndexStats {
   totalFiles: number;
   totalSymbols: number;
+  totalRelationships?: number;
   languages: Record<string, number>;
   lastIndexedAt: string;
 }
@@ -40,14 +52,18 @@ export class CodebaseIndex {
   private indexPath: string;
   private entries: Map<string, FileIndexEntry> = new Map();
   private initialized = false;
+  private astIndex: AstCodebaseIndex;
 
   constructor(projectRoot: string) {
     this.projectRoot = path.resolve(projectRoot);
     this.indexPath = path.join(this.projectRoot, '.gsd', 'code-index.json');
+    this.astIndex = new AstCodebaseIndex(this.projectRoot);
   }
 
   public async initialize(): Promise<void> {
     if (this.initialized) return;
+
+    await this.astIndex.initialize();
 
     if (fs.existsSync(this.indexPath)) {
       try {
@@ -74,7 +90,8 @@ export class CodebaseIndex {
       savedAt: new Date().toISOString(),
       entries: Array.from(this.entries.values()),
     };
-    fs.writeFileSync(this.indexPath, JSON.stringify(payload, null, 2), 'utf-8');
+    writeFileAtomic(this.indexPath, JSON.stringify(payload, null, 2), 'utf8');
+    await this.astIndex.save();
   }
 
   /**
@@ -87,6 +104,10 @@ export class CodebaseIndex {
       this.entries.clear();
     }
 
+    // 1. Update AST index
+    const astResult = await this.astIndex.updateIndex(forceRebuild);
+
+    // 2. Scan code files for fallback/unified representation
     const currentFiles = this.scanCodeFiles(this.projectRoot);
     const currentPaths = new Set(currentFiles);
 
@@ -94,7 +115,7 @@ export class CodebaseIndex {
     let updated = 0;
     let removed = 0;
 
-    // 1. Remove files that no longer exist
+    // Remove obsolete files
     for (const cachedPath of this.entries.keys()) {
       if (!currentPaths.has(cachedPath)) {
         this.entries.delete(cachedPath);
@@ -102,7 +123,7 @@ export class CodebaseIndex {
       }
     }
 
-    // 2. Index new and modified files
+    // Index new and modified files
     for (const relPath of currentFiles) {
       const fullPath = path.join(this.projectRoot, relPath);
       let stat: fs.Stats;
@@ -114,7 +135,6 @@ export class CodebaseIndex {
 
       const existing = this.entries.get(relPath);
       if (existing && !forceRebuild && existing.mtime === stat.mtimeMs) {
-        // Unmodified file
         continue;
       }
 
@@ -136,18 +156,50 @@ export class CodebaseIndex {
     }
 
     await this.save();
-    return { added, updated, removed };
+    return {
+      added: Math.max(added, astResult.added),
+      updated: Math.max(updated, astResult.updated),
+      removed: Math.max(removed, astResult.removed),
+    };
   }
 
   /**
-   * Searches for symbols matching a keyword or phrase.
+   * Searches for symbols matching a keyword or phrase, combining AST and regex indices.
    */
   public searchSymbols(query: string, limit = 10): SymbolInfo[] {
     const q = query.toLowerCase();
     const results: Array<{ symbol: SymbolInfo; score: number }> = [];
+    const seen = new Set<string>();
 
+    // 1. AST Search results (prioritized)
+    const astSyms = this.astIndex.findSymbol(query, limit);
+    for (const s of astSyms) {
+      const symInfo: SymbolInfo = {
+        name: s.name,
+        kind: this.mapAstKindToSymbolKind(s.kind),
+        filePath: s.filePath,
+        startLine: s.startLine,
+        endLine: s.endLine,
+        signature: s.signature,
+        qualifiedName: s.qualifiedName,
+        parentSymbol: s.parentSymbol,
+      };
+      const key = `${s.filePath}:${s.name}:${s.startLine}`;
+      seen.add(key);
+
+      let score = 10;
+      if (s.name.toLowerCase() === q || s.qualifiedName.toLowerCase() === q) score = 15;
+      else if (s.name.toLowerCase().startsWith(q)) score = 12;
+
+      results.push({ symbol: symInfo, score });
+    }
+
+    // 2. Regex fallback entries
     for (const entry of this.entries.values()) {
       for (const sym of entry.symbols) {
+        const key = `${sym.filePath}:${sym.name}:${sym.startLine}`;
+        if (seen.has(key)) continue;
+
         const nameLower = sym.name.toLowerCase();
         let score = 0;
 
@@ -162,6 +214,7 @@ export class CodebaseIndex {
         }
 
         if (score > 0) {
+          seen.add(key);
           results.push({ symbol: sym, score });
         }
       }
@@ -175,55 +228,123 @@ export class CodebaseIndex {
    * Finds relevant source files matching keywords.
    */
   public findRelevantFiles(keywords: readonly string[], limit = 5): string[] {
-    const scores = new Map<string, number>();
+    return this.astIndex.findFilesContaining(keywords, limit);
+  }
 
-    for (const kw of keywords) {
-      const k = kw.toLowerCase();
-      for (const [relPath, entry] of this.entries.entries()) {
-        let score = scores.get(relPath) || 0;
-        const pathLower = relPath.toLowerCase();
+  // Structural AST Query Methods
+  public findSymbol(name: string, limit = 10): SymbolNode[] {
+    return this.astIndex.findSymbol(name, limit);
+  }
 
-        if (pathLower.includes(k)) score += 5;
-        for (const exp of entry.exports) {
-          if (exp.toLowerCase().includes(k)) score += 3;
-        }
-        for (const sym of entry.symbols) {
-          if (sym.name.toLowerCase().includes(k)) score += 2;
-        }
+  public async findSymbols(query: SymbolQuery = {}): Promise<SymbolNode[]> {
+    return this.astIndex.findSymbols(query);
+  }
 
-        if (score > 0) {
-          scores.set(relPath, score);
-        }
-      }
-    }
+  public async findRelationships(symbolName: string): Promise<Array<{
+    type: RelationshipKind;
+    sourceSymbol: string;
+    targetSymbol: string;
+    filePath?: string;
+  }>> {
+    return this.astIndex.findRelationships(symbolName);
+  }
 
-    return Array.from(scores.entries())
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, limit)
-      .map((entry) => entry[0]);
+  public findMethod(structOrClass: string, methodName: string): SymbolNode[] {
+    return this.astIndex.findMethod(structOrClass, methodName);
+  }
+
+  public findImplementations(traitOrInterface: string): SymbolNode[] {
+    return this.astIndex.findImplementations(traitOrInterface);
+  }
+
+  public findCallers(functionName: string): SymbolNode[] {
+    return this.astIndex.findCallers(functionName);
+  }
+
+  public findCallees(functionName: string): string[] {
+    return this.astIndex.findCallees(functionName);
+  }
+
+  public findDefinitions(symbolName: string): SymbolNode[] {
+    return this.astIndex.findDefinitions(symbolName);
+  }
+
+  public findReferences(symbolName: string): SymbolNode[] {
+    return this.astIndex.findReferences(symbolName);
+  }
+
+  public findRelatedSymbols(symbolName: string, maxDepth = 1): SymbolNode[] {
+    return this.astIndex.findRelatedSymbols(symbolName, maxDepth);
+  }
+
+  public getRelationships(): AstRelationship[] {
+    return this.astIndex.getAllRelationships();
+  }
+
+  public calculateSymbolSavings(filePath: string, symbol: SymbolNode): SymbolTokenMetrics {
+    return this.astIndex.calculateSymbolSavings(filePath, symbol);
+  }
+
+  public getAstIndex(): AstCodebaseIndex {
+    return this.astIndex;
   }
 
   public getStats(): CodeIndexStats {
-    let totalSymbols = 0;
-    const languages: Record<string, number> = {};
+    const astStats = this.astIndex.getStats();
+    let totalSymbols = astStats.totalSymbols;
+    const languages: Record<string, number> = { ...astStats.languages };
 
     for (const entry of this.entries.values()) {
-      totalSymbols += entry.symbols.length;
-      languages[entry.language] = (languages[entry.language] || 0) + 1;
+      if (!languages[entry.language]) {
+        totalSymbols += entry.symbols.length;
+        languages[entry.language] = (languages[entry.language] || 0) + 1;
+      }
     }
 
     return {
-      totalFiles: this.entries.size,
+      totalFiles: Math.max(this.entries.size, astStats.totalFiles),
       totalSymbols,
+      totalRelationships: astStats.totalRelationships,
       languages,
       lastIndexedAt: new Date().toISOString(),
     };
   }
 
+  private mapAstKindToSymbolKind(kind: string): SymbolInfo['kind'] {
+    switch (kind) {
+      case 'function':
+        return 'function';
+      case 'method':
+        return 'method';
+      case 'class':
+      case 'struct':
+        return 'class';
+      case 'interface':
+      case 'trait':
+        return 'interface';
+      case 'type':
+      case 'enum':
+        return 'type';
+      case 'variable':
+      case 'constant':
+        return 'variable';
+      default:
+        return 'function';
+    }
+  }
+
   private scanCodeFiles(dir: string, baseDir = dir): string[] {
     const results: string[] = [];
     const ignoreDirs = new Set(['node_modules', '.git', '.planning', 'dist', 'build', '.gsd', '.gemini', 'coverage']);
-    const codeExts = new Set(['.ts', '.cts', '.mts', '.js', '.cjs', '.mjs', '.py', '.rs', '.go', '.cpp', '.c', '.h', '.java']);
+    const codeExts = new Set([
+      '.ts', '.cts', '.mts', '.tsx',
+      '.js', '.cjs', '.mjs', '.jsx',
+      '.py',
+      '.rs',
+      '.go',
+      '.cpp', '.cc', '.cxx', '.hpp', '.h', '.c',
+      '.java',
+    ]);
 
     const scan = (current: string) => {
       let entries: fs.Dirent[];
@@ -265,12 +386,10 @@ export class CodebaseIndex {
       const line = lines[i];
       const trimmed = line.trim();
 
-      // Detect imports
-      if (trimmed.startsWith('import ') || trimmed.startsWith('const ') && trimmed.includes('require(')) {
+      if (trimmed.startsWith('import ') || (trimmed.startsWith('const ') && trimmed.includes('require('))) {
         imports.push(trimmed);
       }
 
-      // Regex symbol detection
       // 1. Function
       const fnMatch = trimmed.match(/(?:export\s+)?(?:async\s+)?function\s+([a-zA-Z0-9_$]+)\s*\(/);
       if (fnMatch) {
@@ -331,7 +450,7 @@ export class CodebaseIndex {
         continue;
       }
 
-      // 5. Class method (e.g. public async syncPositions(): Promise<void> or calculateTotal())
+      // 5. Class method
       const methodMatch = trimmed.match(/^(?:(?:public|private|protected|static|async)\s+)+([a-zA-Z0-9_$]+)\s*\(/);
       if (methodMatch && !['function', 'if', 'for', 'while', 'switch', 'catch', 'constructor'].includes(methodMatch[1])) {
         symbols.push({

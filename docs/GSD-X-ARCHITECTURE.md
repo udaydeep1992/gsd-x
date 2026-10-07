@@ -195,7 +195,7 @@ Rather than embedding entire repositories line-by-line:
 ## 8. Antigravity Runtime Integration
 
 Antigravity operates as a Tier-1 runtime:
-- Workflows automatically invoke the GSD-X SDK context compiler before spawning agents.
+- The SDK context compiler is available through `gsd-tools context compile` and the SDK API. The standard GSD workflow dispatcher does not currently inject compiled context before spawning agents; workflows that need it must invoke the command explicitly.
 - Context injection is formatted cleanly with prompt-injection defense delimiters:
   ```markdown
   <retrieved-memory>

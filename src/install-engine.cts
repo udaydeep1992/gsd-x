@@ -821,6 +821,15 @@ function _copyStaged(stagedDir: string, destDir: string, kind: any, configDir: s
  */
 function _removeGsdEntries(destDir: string, kind: any): void {
   if (!installFs().existsSync(destDir)) return;
+  // The public `$gsd` front-door skill intentionally has an unprefixed
+  // directory name. Remove it only when its package-owned marker is present;
+  // an unrelated user-created `skills/gsd/` folder is preserved.
+  if (kind.kind === 'skills') {
+    const frontDoor = path.join(destDir, 'gsd');
+    if (installFs().existsSync(path.join(frontDoor, '.gsd-frontdoor'))) {
+      installFs().rmSync(frontDoor, { recursive: true, force: true });
+    }
+  }
   if (kind.kind === 'kimi-agents') {
     for (const fileName of ['gsd.yaml', 'gsd.md']) {
       installFs().rmSync(path.join(destDir, fileName), { force: true });

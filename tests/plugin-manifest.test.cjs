@@ -1282,15 +1282,16 @@ describe('H: skills surface projection (#1596)', () => {
     }
   });
 
-  test('parity: one skill dir per command file (DEFECT.GENERATIVE-FIX)', () => {
+  test('parity: one public gsd skill dir per command file, including the unprefixed root entry (DEFECT.GENERATIVE-FIX)', () => {
     const commandsDir = path.resolve(ROOT, 'commands', 'gsd');
     const commandFiles = fs.readdirSync(commandsDir).filter(f => f.endsWith('.md'));
     const skillDirs = fs.readdirSync(SKILLS_DIR, { withFileTypes: true })
-      .filter(e => e.isDirectory() && e.name.startsWith('gsd-'));
+      .filter(e => e.isDirectory() && (e.name.startsWith('gsd-') || e.name === 'gsd'));
     assert.equal(
       skillDirs.length, commandFiles.length,
-      `skills/gsd-*/ count (${skillDirs.length}) must equal commands/gsd/*.md count (${commandFiles.length}). ` +
+      `generated GSD skill count (${skillDirs.length}) must equal commands/gsd/*.md count (${commandFiles.length}). ` +
       `Run: npm run gen:plugin-skills -- --write`
     );
+    assert.ok(fs.existsSync(path.join(SKILLS_DIR, 'gsd', 'SKILL.md')), 'the primary $gsd entry must be generated');
   });
 });

@@ -12,7 +12,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-const { writeSurface, readSurface, resolveSurface, listSurface, applySurface } = require('../gsd-core/bin/lib/surface.cjs');
+const { writeSurface, readSurface, resolveSurface, listSurface, applySurface, pruneSkillDirs } = require('../gsd-core/bin/lib/surface.cjs');
 const { loadSkillsManifest, writeActiveProfile, resolveProfile } = require('../gsd-core/bin/lib/install-profiles.cjs');
 const { resolveRuntimeArtifactLayout } = require('../gsd-core/bin/lib/runtime-artifact-layout.cjs');
 const { CLUSTERS, allClusteredSkills } = require('../gsd-core/bin/lib/clusters.cjs');
@@ -20,6 +20,24 @@ const { createTempDir, cleanup, sandboxHome, writePackageSourceMarkerFixture } =
 const { runMinimalInstall } = require('./helpers/install-shared.cjs');
 
 const REAL_COMMANDS_DIR = path.join(__dirname, '..', 'commands', 'gsd');
+
+describe('root front-door skill ownership', () => {
+  test('surface pruning removes only the marked unprefixed GSD front door', (t) => {
+    const skills = createTempDir('gsd-frontdoor-prune-');
+    t.after(() => cleanup(skills));
+    const managed = path.join(skills, 'gsd');
+    const userOwned = path.join(skills, 'gsd-custom');
+    fs.mkdirSync(managed, { recursive: true });
+    fs.mkdirSync(userOwned, { recursive: true });
+    fs.writeFileSync(path.join(managed, '.gsd-frontdoor'), 'managed by GSD-X\n');
+    fs.writeFileSync(path.join(managed, 'SKILL.md'), 'front door');
+    fs.writeFileSync(path.join(userOwned, 'SKILL.md'), 'user skill');
+    const manifest = new Map([['root', []]]);
+    pruneSkillDirs(skills, new Set(), 'gsd-', manifest);
+    assert.equal(fs.existsSync(managed), false, 'marked root skill should be pruned');
+    assert.equal(fs.existsSync(userOwned), true, 'unmarked user skill should remain');
+  });
+});
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 

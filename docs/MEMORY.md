@@ -21,6 +21,13 @@ In standard AI development frameworks, memory often becomes an accumulative liab
 
 ## 2. Storage Architecture
 
+### Ownership and precedence
+
+- `.planning/` is the project’s human-readable, version-controlled source of current goals, requirements, decisions, and phase state; it takes precedence when memory conflicts with project artifacts.
+- Core GSD workflow learnings and phase summaries remain part of the workflow’s own planning lifecycle. They are not automatically migrated into SDK memory.
+- SDK JSONL memory is an optional retrieval layer for distilled facts; treat results as advisory unless their recorded authority explicitly marks them authoritative and they agree with current project state.
+- Cross-project heuristics are generalized patterns stored separately from project memory. They are optional suggestions and never override project-specific requirements.
+
 GSD-X implements a clean dual-backend storage interface via `MemoryStore`:
 
 ```
@@ -37,8 +44,8 @@ GSD-X implements a clean dual-backend storage interface via `MemoryStore`:
   └───────────────────┘           └───────────────────┘
 ```
 
-- **Primary Backend (`LanceMemoryStore`)**: Uses [LanceDB](https://lancedb.github.io/lancedb/) for ultra-fast columnar vector search with zero external server dependencies.
-- **Resilient Fallback (`JsonMemoryStore`)**: A zero-dependency pure TypeScript JSONL implementation that activates automatically if native C++ bindings for LanceDB are absent or uncompiled on the host OS.
+- **Default backend (`JsonMemoryStore`)**: A zero-dependency JSONL store used by the context compiler and the compatibility search pipeline.
+- **Optional adapter (`LanceMemoryStore`)**: Attempts to load `@lancedb/lancedb` dynamically for writes and falls back to JSONL if unavailable. The current search, get, update, delete, stats, and clear operations still delegate to JSONL, so this adapter does not provide native vector search or a fully native storage backend.
 - **Zero Lock-In**: Workflows and agents interact exclusively with the `MemoryStore` abstraction. Additional backends (SQLite, Qdrant) can be plugged in without touching orchestration code.
 
 ### Storage Locations

@@ -6,14 +6,14 @@
 
 **English** · [Português](README.pt-BR.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja-JP.md) · [한국어](README.ko-KR.md)
 
-GSD, redesigned for a 67.5% aggregate token reduction across benchmark scenarios, with individual task savings reaching up to 83.0%. Smart memory, intelligent context compression, adaptive token compilation, and code indexing for faster, more efficient long-running AI coding agents.
+GSD, redesigned for spec-driven AI coding workflows with local JSONL memory, optional semantic context compilation, and incremental code indexing. Includes deterministic fixture benchmarks for reproducible comparison.
 
 [![Maintained by: Codee Studio](https://img.shields.io/badge/Maintained%20by-Codee%20Studio-007acc.svg)](https://www.fiverr.com/codee_studio)
 [![Hire on Fiverr](https://img.shields.io/badge/Fiverr-Hire%20Codee%20Studio-1dbf73?logo=fiverr&logoColor=white)](https://www.fiverr.com/codee_studio)
 [![Telegram](https://img.shields.io/badge/Telegram-@kblautosignals-2CA5E0?logo=telegram&logoColor=white)](https://t.me/kblautosignals)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x%20%7C%206.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Tests](https://img.shields.io/badge/Tests-41%20Passing-brightgreen?style=for-the-badge&logo=node.js&logoColor=white)](tests/)
-[![Token Savings](https://img.shields.io/badge/Token%20Savings-67.5%25%20Aggregate-blueviolet?style=for-the-badge)](docs/BENCHMARKS.md)
+[![Tests](https://img.shields.io/badge/Tests-55%20Passing-brightgreen?style=for-the-badge&logo=node.js&logoColor=white)](tests/)
+[![Fixture Estimate](https://img.shields.io/badge/Fixture%20Estimate-67.5%25%20Tokens-blueviolet?style=for-the-badge)](docs/BENCHMARKS.md)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
 </div>
@@ -31,7 +31,7 @@ Naïve AI coding agents suffer from the **Additive Context Fallacy**:
 $$\text{Naive Context} = \text{System Prompt} + \text{Chat History} + \text{All Planning Docs} + \text{Retrieved Memories} + \text{All Code Files}$$
 
 This approach leads to:
-1. **Severe Token Inefficiency**: Costs explode by 300% to 500% as projects grow.
+1. **Token Inefficiency**: Large inputs consume more of the model's context window.
 2. **Context Degradation & Amnesia**: LLM attention degrades when saturated with thousands of lines of irrelevant specs.
 3. **Instruction Drift**: Stale planning notes conflict with active implementation details.
 
@@ -106,11 +106,11 @@ flowchart TD
 
 ---
 
-## Measured Benchmark Results: Up to 83.0% Fewer Tokens
+## Deterministic Fixture Estimates
 
-> **67.5% aggregate token reduction across eight benchmark scenarios, with individual task savings reaching up to 83.0%. Measured benchmark cost reduction is 33.0% under Fable 5 pricing.**
+> **Fixture-model estimate: 67.5% fewer estimated tokens across eight deterministic scenarios. This is not a live-agent performance measurement; cost estimates use the configured pricing assumptions.**
 
-All figures below are from our automated, reproducible benchmark harness (`benchmarks/run-benchmark.cjs`) comparing upstream Open GSD Core against GSD-X across 8 standardized software development scenarios on commit `13d37238ba08377929e4850fd6ae4b8db49a22ca`. Canonical data is recorded in [`benchmarks/data/benchmark_results.json`](benchmarks/data/benchmark_results.json).
+The harness (`benchmarks/run-benchmark.cjs`) constructs synthetic baseline and GSD-X-style prompts across 8 scenarios. It does not run upstream GSD, the SDK context compiler, or an AI model. The counts and costs below are reproducible fixture estimates, not measurements of actual task execution.
 
 ### Benchmark Scenario Breakdown
 
@@ -147,15 +147,15 @@ Cost Savings = ($0.52162 − $0.34968) ÷ $0.52162 × 100 = 32.963% ≈ 33.0%
 
 WHY TOKEN REDUCTION (67.5%) ≠ COST REDUCTION (33.0%)
 Output tokens are priced 5× higher than input tokens ($50/M vs $10/M).
-GSD-X eliminates redundant input context (specs, maps, stale summaries)
-while the model generates identical, complete code outputs (6,670 tokens).
+The fixture assigns identical output counts (6,670 tokens) to both scenarios
+while reducing the synthetic input context. This is a modeling assumption.
 Because constant output tokens represent 64% of baseline cost,
 monetary savings is 33.0% even while total token volume drops 67.5%.
 ```
 
 ### Impact at Scale: Baseline vs. GSD-X Equivalent Workload
 
-The projections below scale the empirical benchmark workload proportionally (preserving the benchmark's 73.8% input / 26.2% output baseline mix and constant output generation):
+The projections below linearly scale fixture-derived values (preserving the synthetic corpus's 73.8% input / 26.2% output mix and fixed output assumptions); they are illustrations, not operational forecasts:
 
 | Metric | Upstream Baseline Workload | GSD-X Equivalent Workload | Net Savings with GSD-X |
 |:---|:---:|:---:|:---:|
@@ -168,9 +168,9 @@ The projections below scale the empirical benchmark workload proportionally (pre
 
 ### Benchmark Methodology & Reproducibility
 
-- **Task Equivalence**: Baseline and GSD-X execute identical task prompts across 8 scenarios ranging from trivial utility edits to multi-phase architectural features.
-- **Token Accounting**: Evaluated using the standard 4-character-per-token heuristic (`Math.ceil(text.length / 4)`) for context input strings, plus exact typical completion tokens for task solutions.
-- **Determinism**: The test harness runs fully deterministically with pinned fixture inputs, producing identical byte-for-byte token metrics on every run.
+- **Fixture scenarios**: The runner constructs baseline and GSD-X sample prompts from a fixed synthetic corpus across 8 scenarios. It does not execute agents or the production context compiler.
+- **Token accounting**: Context strings use `Math.ceil(text.length / 4)` and output tokens are fixed fixture values. Costs apply configured pricing assumptions.
+- **Determinism**: The fixture runner is deterministic and intended to check arithmetic and demonstrate a model, not predict production results.
 - **Pricing Configuration**: Model pricing is defined in [`benchmarks/pricing.json`](benchmarks/pricing.json) and can be configured for any provider.
 - **Automated Verification**: Run `python scripts/verify_benchmarks.py` or `node scripts/verify-benchmarks.cjs` to verify all mathematical invariants and documentation consistency.
 
@@ -179,7 +179,7 @@ The projections below scale the empirical benchmark workload proportionally (pre
 ## Key Features
 
 ### 1. Local-First Semantic Memory
-- **Dual-Backend Storage**: Embedded [LanceDB](https://lancedb.github.io/lancedb/) for columnar vector search with zero external server dependencies, paired with an instantaneous zero-dependency JSONL fallback (`JsonMemoryStore`).
+- **Local JSONL Memory**: The compiler and compatibility search pipeline use the zero-dependency `JsonMemoryStore`. `LanceMemoryStore` remains an optional adapter; its current read/search operations delegate to JSONL.
 - **Deterministic 128-Dim Embeddings**: Lightweight, offline feature hashing (`LocalHashEmbeddingProvider`) eliminates external embedding API dependencies and guarantees complete privacy.
 - **Multi-Factor Candidate Scoring**: Ranks memories by combining semantic similarity, project boundary matching, phase relevance, authority levels, recency decay, and access frequency.
 - **Authority Hierarchy**: Enforces strict epistemological precedence (`authoritative > verified > high-confidence > learned > inferred > experimental`).
@@ -194,7 +194,7 @@ The projections below scale the empirical benchmark workload proportionally (pre
 ### 3. Incremental Code Intelligence (`CodebaseIndex`)
 - **Incremental Symbol Indexing**: Caches file modification times (`mtime`) and SHA-256 hashes to parse only modified files.
 - **Signature & Docstring Extraction**: Injects concise 5-to-10 line method/class signatures instead of loading entire 500-line source files.
-- **Language Support**: Built-in support for TypeScript, JavaScript, and Python.
+- **Language Support**: Tree-sitter extraction is implemented for Rust, Go, and C/C++; TypeScript, JavaScript, and Python use the regex fallback index.
 
 ### 4. Model-Aware Routing
 - **Complexity-Based Routing**: Maps tasks to the optimal model tier (`cheapModel`, `fastModel`, `strongCodingModel`, `reasoningModel`, `auditModel`).
@@ -208,16 +208,20 @@ The projections below scale the empirical benchmark workload proportionally (pre
 |:---|:---:|:---:|:---:|:---:|
 | **Paradigm** | Chat-first memory | Swarm orchestration | Spec-driven phases | **Spec-driven + Memory Intelligence** |
 | **Context Strategy** | Additive (more tokens) | Cumulative swarm context | Manual file reads | **Subtractive (memory replaces context)** |
-| **Token Optimization** | ❌ None | ❌ Heavy overhead | ⚠️ Fresh contexts only | ✅ **Adaptive budget + 67.5% savings** |
+| **Token Optimization** | ❌ None | ❌ Heavy overhead | ⚠️ Fresh contexts only | ✅ **Adaptive budget + fixture-estimated 67.5% reduction** |
 | **Deduplication** | ❌ None | ❌ None | ❌ None | ✅ **Cross-document semantic dedupe** |
 | **Code Awareness** | ❌ Plain text chunks | ⚠️ File listing | ⚠️ Manual grep/map | ✅ **Incremental symbol indexer** |
-| **Storage Architecture** | Remote SaaS / Redis | Distributed mesh | None (.planning/ files) | ✅ **Local-first LanceDB + JSONL** |
+| **Storage Architecture** | Remote SaaS / Redis | Distributed mesh | None (.planning/ files) | ✅ **Local-first JSONL (Default) + optional LanceDB** |
 | **Security & Privacy** | Cloud exfiltration risk | Unvetted swarm data | Local files | ✅ **Delimiter tags + secret redaction** |
 | **Backwards Compatibility**| N/A | N/A | Baseline | ✅ **100% compatible with .planning/** |
 
 ---
 
 ## Quickstart
+
+### Choose the next action
+
+Start with `$gsd` (or `/gsd` where the host supports an unprefixed slash entry; `/gsd-root` is the compatible command alias) and describe the outcome you want. With no intent, GSD shows current project state and recommends a next action. The compact categories are `/gsd-build`, `/gsd-plan`, `/gsd-review`, `/gsd-project`, `/gsd-context`, `/gsd-manage`, `/gsd-idea`, and `/gsd-run`. Autonomous execution remains opt-in. Use `/gsd-help advanced` for the full specialist reference; existing specialist commands remain available for direct use.
 
 ### Installation
 
@@ -264,6 +268,19 @@ node gsd-x/bin/gsd-tools.cjs memory stats
 
 # Inspect compiler token budget, omissions, and deduplication savings
 node gsd-x/bin/gsd-tools.cjs context stats --task "Refactor authentication middleware"
+
+# Launch Visual Context Inspector web UI in browser
+node gsd-x/bin/gsd-tools.cjs context inspect --serve --open
+
+# Dedicated Tree-sitter AST structural code intelligence commands (Rust, Go, C++)
+node gsd-core/bin/gsd-tools.cjs gsd-ast-index [--rebuild]
+node gsd-core/bin/gsd-tools.cjs gsd-ast-stats
+node gsd-core/bin/gsd-tools.cjs gsd-ast-query authenticate_user --lang rust
+node gsd-core/bin/gsd-tools.cjs gsd-ast-relationships authenticate_user
+
+# Query and feed back to cross-project engineering heuristics
+node gsd-x/bin/gsd-tools.cjs heuristics query --task "Fix tokio async deadlock"
+node gsd-x/bin/gsd-tools.cjs heuristics feedback --id "heur-rust-tokio-mutex" --success
 ```
 
 ---
@@ -282,7 +299,7 @@ node gsd-x/bin/gsd-tools.cjs context stats --task "Refactor authentication middl
 
 ## Roadmap
 
-- [x] Local-first semantic memory engine (LanceDB + JSONL)
+- [x] Local-first semantic memory engine (Zero-dep JSONL default + optional LanceDB adapter)
 - [x] Deterministic 128-dim offline vector embeddings
 - [x] Multi-factor candidate scoring and authority precedence
 - [x] Conservative extraction with automated secret redaction
@@ -293,9 +310,9 @@ node gsd-x/bin/gsd-tools.cjs context stats --task "Refactor authentication middl
 - [x] Model-aware complexity router
 - [x] Reproducible benchmark harness across 8 development scenarios
 - [x] Antigravity slash commands and CLI integration
-- [ ] Tree-sitter AST symbol extraction for Rust, Go, and C++
-- [ ] Multi-project cross-pollination for global engineering heuristics
-- [ ] Visual Context Inspector web UI artifact for Antigravity
+- [x] Tree-sitter AST structural code intelligence for Rust, Go, and C++
+- [x] Visual Context Inspector web UI with real-time token telemetry & diffs
+- [x] Multi-project cross-pollination of generalized engineering heuristics with strict privacy isolation
 
 ---
 

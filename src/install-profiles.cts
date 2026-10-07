@@ -77,6 +77,16 @@ import installModelOverrideResolver = require('./install-model-override-resolver
  */
 const PROFILES = Object.freeze({
   core: Object.freeze([
+    'root',
+    'build',
+    'plan',
+    'review',
+    'project',
+    'context',
+    'manage',
+    'idea',
+    'run',
+    'peer-review',
     'new-project',
     'discuss-phase',
     'plan-phase',
@@ -87,6 +97,16 @@ const PROFILES = Object.freeze({
     'surface',
   ]),
   standard: Object.freeze([
+    'root',
+    'build',
+    'plan',
+    'review',
+    'project',
+    'context',
+    'manage',
+    'idea',
+    'run',
+    'peer-review',
     // Core loop
     'new-project',
     'onboard',
@@ -817,7 +837,11 @@ function stageSkillsForRuntimeAsSkills(
       if (resolvedProfile.skills !== '*' && !(resolvedProfile.skills).has(stem)) continue;
       firstPartyStems.add(stem);
       const content = installFs().readFileSync(path.join(srcCommandsDir, entry.name), 'utf8');
-      const skillName = `${prefix}${stem}`;
+      // `root.md` is the canonical `$gsd` skill front door on runtimes with
+      // the normal gsd- skill namespace. Empty-prefix layouts (Hermes) keep
+      // their existing bare-stem namespace to avoid colliding with its
+      // skills/gsd/ bundle directory.
+      const skillName = stem === 'root' && prefix === 'gsd-' ? 'gsd' : `${prefix}${stem}`;
       const converted = converter(content, skillName);
 
       if (doNest && bundles!.routerStems.has(stem)) {
@@ -846,6 +870,9 @@ function stageSkillsForRuntimeAsSkills(
       const destDir = path.join(stageDir, skillName);
       installFs().mkdirSync(destDir, { recursive: true });
       installFs().writeFileSync(path.join(destDir, 'SKILL.md'), converted);
+      if (stem === 'root' && prefix === 'gsd-') {
+        installFs().writeFileSync(path.join(destDir, '.gsd-frontdoor'), 'managed by GSD-X\n');
+      }
     }
 
     // #2322: materialize installed THIRD-PARTY capability skills, bound to

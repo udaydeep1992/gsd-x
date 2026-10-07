@@ -1,7 +1,7 @@
 {
   "name": "@udaydeep1992/gsd-x",
-  "version": "1.16.2",
-  "description": "GSD, redesigned for a 67.5% aggregate token reduction across benchmark scenarios, with individual task savings reaching up to 83.0%. Smart memory, intelligent context compression, adaptive token compilation, and code indexing for faster, more efficient long-running AI coding agents.",
+  "version": "1.16.3",
+  "description": "GSD, redesigned for spec-driven AI coding workflows with local JSONL memory, optional semantic context compilation, and incremental code indexing. Includes deterministic fixture benchmarks for reproducible comparison.",
   "main": ".opencode/plugins/gsd-core.js",
   "bin": {
     "gsd-x": "bin/install.js",
@@ -72,6 +72,8 @@
   },
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "^0.2.84",
+    "tree-sitter-wasms": "^0.1.13",
+    "web-tree-sitter": "^0.20.8",
     "ws": "^8.21.0"
   },
   "devDependencies": {

@@ -40,6 +40,16 @@ In addition to upstream commands (`/gsd-plan-phase`, `/gsd-execute-phase`, `/gsd
 | `/gsd-memory-stats` | Observe | Display memory count, scope breakdown, and authority levels |
 | `/gsd-memory-doctor` | Audit | Audit memory health, detect corrupt lines, and scan for secret leaks |
 | `/gsd-context-stats` | Inspect | Inspect token budget, sources, omissions, and savings for a task |
+| `/gsd-context-inspect [--open] [--serve]` | Visualize | Launch or export the Visual Context Inspector web UI |
+| `/gsd-ast-index [--rebuild]` | AST Index | Build or incrementally update Tree-sitter AST codebase index |
+| `/gsd-ast-query <name> [--lang <l>]` | AST Query | Query AST function/struct/class definitions and signatures |
+| `/gsd-ast-relationships <name>` | AST Graph | Inspect structural caller/callee/implements dependency graphs (alias: `/gsd-ast-graph`) |
+| `/gsd-ast-stats` | AST Stats | Display indexed AST files, symbols, relationships, and languages |
+| `/gsd-heuristics-stats` | Heuristics | Display global cross-project engineering heuristics metrics |
+| `/gsd-heuristics-list` | Heuristics | List all generalized engineering heuristics and rules |
+| `/gsd-heuristics-query <task>` | Heuristics | Retrieve task-relevant engineering rules and anti-patterns |
+| `heuristics add --title <t> --rec <r>` | Heuristics | Add a verified pattern through privacy sanitization guards |
+| `heuristics feedback --id <i> [--success]` | Heuristics | Record empirical task feedback to update confidence scores |
 
 ---
 

@@ -40,6 +40,16 @@ GSD ships **the same set of skills** to every supported runtime, using the hyphe
 
 The installer writes this form into the command directory of each runtime you target.
 
+### Start with intent
+
+Use `/gsd` (or `$gsd` on skill-oriented runtimes) to describe an outcome in
+natural language. With no arguments, the front door reports project state and
+recommends the next GSD action. The concise categories are `/gsd-build`,
+`/gsd-plan`, `/gsd-review`, `/gsd-project`, `/gsd-context`, `/gsd-manage`,
+`/gsd-idea`, and `/gsd-run`. `/gsd-next` remains a compatibility entry point.
+Autonomous progression requires an explicit request. Existing specialist
+commands remain available; use `/gsd-help advanced` for the complete reference.
+
 ## Namespace routing primer (`gsd-ns-*`, v1.40+)
 
 ### Architecture

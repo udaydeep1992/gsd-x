@@ -572,7 +572,8 @@ function pruneSkillDirs(skillsDir: string, retainedNames: Set<string>, prefix: s
 
     let isGsdOwned: boolean;
     if (prefix !== '') {
-      if (!entry.startsWith(prefix)) {
+      const isFrontDoor = entry === 'gsd' && fs.existsSync(path.join(entryPath, '.gsd-frontdoor'));
+      if (!entry.startsWith(prefix) && !isFrontDoor) {
         // Does not match prefix at all — user-owned, preserve.
         continue;
       }
@@ -592,8 +593,10 @@ function pruneSkillDirs(skillsDir: string, retainedNames: Set<string>, prefix: s
       // Finding 1 fix: prefix match is necessary but NOT sufficient.
       // The dir must also be in the manifest to be considered GSD-owned.
       // A user-created gsd-* dir that isn't in the manifest is preserved with a warning.
-      const stem = entry.slice(prefix.length);
-      if (canonicalStems && canonicalStems.has(stem)) {
+      const stem = isFrontDoor ? 'root' : entry.slice(prefix.length);
+      if (isFrontDoor) {
+        isGsdOwned = true;
+      } else if (canonicalStems && canonicalStems.has(stem)) {
         isGsdOwned = true;
       } else if (fs.existsSync(path.join(entryPath, CAPABILITY_SKILL_MARKER))) {
         // #2322 HIGH-3: not a first-party stem, but self-certified as a

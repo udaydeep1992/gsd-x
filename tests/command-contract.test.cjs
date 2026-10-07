@@ -42,6 +42,108 @@ const { createTempDir, cleanup } = require('./helpers.cjs');
 
 const LINT_SCRIPT = path.join(ROOT, 'scripts', 'lint-command-contract.cjs');
 
+describe('intent-driven command surface', () => {
+  test('root command is the canonical orchestrator and keeps autonomy opt-in', () => {
+    const root = fs.readFileSync(path.join(COMMANDS_DIR, 'root.md'), 'utf8');
+    assert.match(root, /primary GSD-X entry point/i);
+    assert.match(root, /confidence/i);
+    assert.match(root, /high-risk/i);
+    assert.match(root, /Never start autonomous execution by default/i);
+    assert.match(root, /\/gsd:progress --do/);
+  });
+
+  test('all eight public categories delegate to the shared root router', () => {
+    for (const category of ['build', 'plan', 'review', 'project', 'context', 'manage', 'idea', 'run']) {
+      const source = fs.readFileSync(path.join(COMMANDS_DIR, `${category}.md`), 'utf8');
+      assert.match(source, new RegExp(`name: gsd:${category}`));
+      assert.match(source, /\/gsd:root/);
+    }
+  });
+
+  test('root defines the required state-aware routing precedence in order', () => {
+    const root = fs.readFileSync(path.join(COMMANDS_DIR, 'root.md'), 'utf8');
+    const precedence = [
+      'Parse the explicit user intent',
+      'Detect project state',
+      'Detect the current phase and milestone',
+      'Detect existing relevant artifacts',
+      'Detect risk level and side effects',
+      'Select one category as an intent hint',
+      'Select the workflow appropriate to both intent and detected state',
+      'Select only the minimum required skills',
+      'Select only the minimum required agents',
+      'Select existing underlying command(s) or tools',
+      'Check prerequisites and resolve missing prerequisites in order',
+      'Ask for confirmation when risk policy or the selected workflow requires it',
+      'Execute only after prerequisite and confirmation gates pass',
+      'Verify the result against the requested outcome',
+      'Recommend one sensible next action',
+    ];
+    let previous = -1;
+    for (const stage of precedence) {
+      const index = root.indexOf(stage);
+      assert.ok(index > previous, `routing precedence is missing or out of order: ${stage}`);
+      previous = index;
+    }
+    assert.match(root, /Do not implement separate routing logic inside/);
+    assert.match(root, /Categories are intent hints, not orchestration engines/);
+  });
+
+  test('root pins confidence thresholds and risk confirmation independently', () => {
+    const root = fs.readFileSync(path.join(COMMANDS_DIR, 'root.md'), 'utf8');
+    for (const threshold of ['C ≥ 0.90', '0.75 ≤ C < 0.90', '0.50 ≤ C < 0.75', 'C < 0.50']) {
+      assert.ok(root.includes(threshold), `missing confidence threshold ${threshold}`);
+    }
+    assert.match(root, /High-risk action at any confidence: require explicit confirmation/);
+    assert.match(root, /Risk is assessed separately and never increases confidence/);
+  });
+
+  test('root includes state-dependent routing examples for repeated requests', () => {
+    const root = fs.readFileSync(path.join(COMMANDS_DIR, 'root.md'), 'utf8');
+    for (const example of [
+      '“Build authentication” | No GSD project',
+      '“Build authentication” | Matching phase is planned and executable',
+      '“Build authentication” | Matching phase is implemented',
+      '“Fix login bug” | No useful codebase map/context',
+      '“Review authentication” | Known security-sensitive area',
+      '“What should I do next?” | Active phase',
+      '“What should I do next?” | All work complete',
+      '“Make this production ready and fix everything”',
+    ]) {
+      assert.ok(root.includes(example), `missing state-aware routing example: ${example}`);
+    }
+  });
+
+  test('category entry points leave state and workflow selection to root', () => {
+    for (const category of ['build', 'plan', 'review', 'project', 'context', 'manage', 'idea', 'run']) {
+      const source = fs.readFileSync(path.join(COMMANDS_DIR, `${category}.md`), 'utf8');
+      assert.match(source, /only as an intent hint/);
+      assert.match(source, /Do not inspect state, select a workflow, skill, agent, or command here/);
+    }
+  });
+
+  test('explicit peer review is a specialist destination selected by root', () => {
+    const root = fs.readFileSync(path.join(COMMANDS_DIR, 'root.md'), 'utf8');
+    const peerReview = fs.readFileSync(path.join(COMMANDS_DIR, 'peer-review.md'), 'utf8');
+    assert.match(root, /dispatch to `\/gsd:peer-review`/i);
+    assert.match(peerReview, /@~\/\.claude\/gsd-core\/workflows\/review\.md/);
+    assert.match(peerReview, /not an intent router/);
+  });
+
+  test('default help is concise and advanced reference remains opt-in', () => {
+    const help = fs.readFileSync(path.join(COMMANDS_DIR, 'help.md'), 'utf8');
+    assert.match(help, /If arguments are empty, output only this concise entry guide/);
+    assert.match(help, /complete existing reference workflow/);
+    assert.match(help, /\/gsd:help advanced/);
+  });
+
+  test('next remains compatible and delegates natural-language intent to root', () => {
+    const next = fs.readFileSync(path.join(COMMANDS_DIR, 'next.md'), 'utf8');
+    assert.match(next, /\/gsd:root \$ARGUMENTS/);
+    assert.match(next, /smart-entry\.md/);
+  });
+});
+
 const commandFiles = fs
   .readdirSync(COMMANDS_DIR)
   .filter(f => f.endsWith('.md'))

@@ -4878,11 +4878,385 @@ async function routeContextCommand({ args, cwd, raw, error }) {
         output(textOut, raw, textOut);
         break;
       }
+      case 'inspect': {
+        const taskIdx = args.indexOf('--task');
+        const task = taskIdx !== -1 && args[taskIdx + 1] ? args[taskIdx + 1] : 'Context Inspection Task';
+        const exportIdx = args.indexOf('--export');
+        const exportPath = exportIdx !== -1 && args[exportIdx + 1] ? args[exportIdx + 1] : null;
+        const portIdx = args.indexOf('--port');
+        const port = portIdx !== -1 && args[portIdx + 1] ? parseInt(args[portIdx + 1], 10) : 8765;
+        const serve = args.includes('--serve');
+        const open = args.includes('--open');
+
+        const { record, html } = await handler.inspect(task);
+        if (exportPath) {
+          const fs = require('fs');
+          const path = require('path');
+          const absPath = path.resolve(cwd, exportPath);
+          fs.mkdirSync(path.dirname(absPath), { recursive: true });
+          fs.writeFileSync(absPath, html, 'utf8');
+          output(`Context Inspector HTML exported to: ${absPath}`, raw, { exported: absPath, requestId: record.requestId });
+          break;
+        }
+
+        if (serve || open) {
+          const serverInfo = await handler.startServer(port);
+          const msg = `GSD-X Visual Context Inspector running at ${serverInfo.url}\nActive record: ${record.requestId} (${record.finalTokens} tokens)\nPress Ctrl+C to stop.`;
+          output(msg, raw, { url: serverInfo.url, record });
+          if (open) {
+            try {
+              const { exec } = require('child_process');
+              const cmd = process.platform === 'win32' ? `start ${serverInfo.url}` : process.platform === 'darwin' ? `open ${serverInfo.url}` : `xdg-open ${serverInfo.url}`;
+              exec(cmd);
+            } catch (_) {}
+          }
+          break;
+        }
+
+        const fs = require('fs');
+        const path = require('path');
+        const defaultPath = path.join(cwd, '.gsd', 'inspector', 'index.html');
+        fs.mkdirSync(path.dirname(defaultPath), { recursive: true });
+        fs.writeFileSync(defaultPath, html, 'utf8');
+        const summary = [
+          `=== GSD-X Visual Context Inspector ===`,
+          `Request ID: ${record.requestId}`,
+          `Task: ${record.task}`,
+          `Token Reduction: ${record.reductionPercent.toFixed(1)}% (${record.originalTokens} -> ${record.finalTokens} tokens)`,
+          `Tokens Saved: ${record.tokensSaved}`,
+          `Retrieved Artifacts: ${record.selectedArtifacts.length}`,
+          `Rejected Candidates: ${record.rejectedArtifacts.length}`,
+          `Inspector UI generated at: ${defaultPath}`,
+          `Tip: Run 'context inspect --serve' or '--open' to launch live inspector server.`,
+        ].join('\n');
+        output(summary, raw, { path: defaultPath, record });
+        break;
+      }
       default:
-        error(`Unknown context subcommand: ${subcommand}. Available: stats, compile`, ERROR_REASON.USAGE);
+        error(`Unknown context subcommand: ${subcommand}. Available: stats, compile, inspect`, ERROR_REASON.USAGE);
     }
   } catch (cmdErr) {
     error(`context error: ${cmdErr && cmdErr.message ? cmdErr.message : String(cmdErr)}`, ERROR_REASON.UNKNOWN);
+  }
+}
+
+async function routeAstCommand({ args, cwd, raw, error }) {
+  const subcommand = args[1] || 'stats';
+  let sdk;
+  try {
+    sdk = require('../../sdk/dist/index.js');
+  } catch (err) {
+    try {
+      sdk = require('../sdk/dist/index.js');
+    } catch {
+      error(`GSD-X SDK could not be loaded: ${err && err.message ? err.message : String(err)}`, ERROR_REASON.UNKNOWN);
+      return;
+    }
+  }
+
+  const { AstCodebaseIndex } = sdk;
+  const astIndex = new AstCodebaseIndex(cwd);
+
+  const getPositional = (argsList) => {
+    const flagsWithValues = new Set(['--query', '--lang', '--kind', '--limit', '--symbol']);
+    for (let i = 2; i < argsList.length; i++) {
+      const prev = argsList[i - 1];
+      if (flagsWithValues.has(prev)) continue;
+      if (!argsList[i].startsWith('--')) return argsList[i];
+    }
+    return '';
+  };
+
+  try {
+    switch (subcommand) {
+      case 'rebuild': {
+        const result = await astIndex.updateIndex(true);
+        const stats = astIndex.getStats();
+        const textOut = `AST Index rebuilt successfully: ${stats.totalFiles} files (${result.added} added), ${stats.totalSymbols} symbols, ${stats.totalRelationships} relationships.`;
+        output(textOut, raw, { ...result, ...stats });
+        break;
+      }
+      case 'index':
+      case 'update': {
+        const force = args.includes('--force') || args.includes('--rebuild');
+        const result = await astIndex.updateIndex(force);
+        const stats = astIndex.getStats();
+        const textOut = force
+          ? `AST Index rebuilt successfully: ${stats.totalFiles} files (${result.added} added), ${stats.totalSymbols} symbols, ${stats.totalRelationships} relationships.`
+          : `AST Index updated: ${stats.totalFiles} files (${result.added} added, ${result.updated} updated, ${result.removed} removed), ${stats.totalSymbols} symbols, ${stats.totalRelationships} relationships.`;
+        output(textOut, raw, { ...result, ...stats });
+        break;
+      }
+      case 'stats': {
+        await astIndex.initialize();
+        const stats = astIndex.getStats();
+        const textOut = [
+          `=== GSD-X AST Codebase Index Stats ===`,
+          `Supported Languages: Rust, Go, C++ (Tree-sitter WASM) + Fallback Regex`,
+          `Indexed Files: ${stats.totalFiles}`,
+          `Indexed Symbols: ${stats.totalSymbols}`,
+          `Relationships: ${stats.totalRelationships}`,
+          `Files by Language: ${JSON.stringify(stats.languages)}`,
+          `Last Indexed: ${stats.lastIndexedAt}`,
+        ].join('\n');
+        output(textOut, raw, stats);
+        break;
+      }
+      case 'query':
+      case 'search': {
+        const queryIdx = args.indexOf('--query');
+        let q = queryIdx !== -1 && args[queryIdx + 1] ? args[queryIdx + 1] : '';
+        if (!q) {
+          q = getPositional(args);
+        }
+        const langIdx = args.indexOf('--lang');
+        const language = langIdx !== -1 && args[langIdx + 1] ? args[langIdx + 1] : undefined;
+        const kindIdx = args.indexOf('--kind');
+        const kind = kindIdx !== -1 && args[kindIdx + 1] ? args[kindIdx + 1] : undefined;
+        const limitIdx = args.indexOf('--limit');
+        const limit = limitIdx !== -1 && args[limitIdx + 1] ? parseInt(args[limitIdx + 1], 10) : undefined;
+
+        await astIndex.initialize();
+        const symbols = await astIndex.findSymbols({ name: q, language, kind, limit });
+        if (raw) {
+          output('', true, symbols);
+          return;
+        }
+        const textOut = symbols.length === 0
+          ? `No AST symbols found matching query: "${q}"`
+          : symbols.map((s) => `[${s.language}:${s.kind}] ${s.qualifiedName || s.name} (${s.filePath}:${s.startLine}-${s.endLine})`).join('\n');
+        output(textOut, false, symbols);
+        break;
+      }
+      case 'relationships':
+      case 'graph': {
+        const symIdx = args.indexOf('--symbol');
+        let symName = symIdx !== -1 && args[symIdx + 1] ? args[symIdx + 1] : '';
+        if (!symName) {
+          symName = getPositional(args);
+        }
+        if (!symName) {
+          error('Usage: gsd-ast-relationships [--symbol] <name>', ERROR_REASON.USAGE);
+          return;
+        }
+        await astIndex.initialize();
+        const rels = await astIndex.findRelationships(symName);
+        if (raw) {
+          output('', true, rels);
+          return;
+        }
+        const textOut = rels.length === 0
+          ? `No structural relationships found for "${symName}"`
+          : rels.map((r) => `[${r.type}] ${r.sourceSymbol} -> ${r.targetSymbol} (${r.filePath})`).join('\n');
+        output(textOut, false, rels);
+        break;
+      }
+      case 'help':
+      case '--help':
+      case '-h': {
+        const helpText = [
+          `=== GSD-X AST Structural Code Intelligence Commands ===`,
+          `  gsd-ast-index [--force|--rebuild]        Build or incrementally update AST index (.gsd/ast-index.json)`,
+          `  gsd-ast-query <name> [--lang <l>] [--kind <k>] [--limit <n>] Search functions, structs, traits, methods`,
+          `  gsd-ast-relationships <symbol>           Inspect structural caller/callee/implements dependency graph`,
+          `  gsd-ast-stats                            Display indexed AST files, symbols, relationships, languages`,
+        ].join('\n');
+        output(helpText, raw, { help: true });
+        break;
+      }
+      default:
+        error(`Unknown ast subcommand: ${subcommand}. Available: index, rebuild, query, relationships, stats`, ERROR_REASON.USAGE);
+    }
+  } catch (cmdErr) {
+    error(`ast error: ${cmdErr && cmdErr.message ? cmdErr.message : String(cmdErr)}`, ERROR_REASON.UNKNOWN);
+  }
+}
+
+async function routeHeuristicsCommand({ args, cwd, raw, error }) {
+  const subcommand = args[1] || 'stats';
+  let sdk;
+  try {
+    sdk = require('../../sdk/dist/index.js');
+  } catch (err) {
+    try {
+      sdk = require('../sdk/dist/index.js');
+    } catch {
+      error(`GSD-X SDK could not be loaded: ${err && err.message ? err.message : String(err)}`, ERROR_REASON.UNKNOWN);
+      return;
+    }
+  }
+
+  const { GlobalHeuristicsStore, HeuristicsRetriever, HeuristicFeedbackRecorder, HeuristicsGeneralizer } = sdk;
+  const store = new GlobalHeuristicsStore();
+
+  try {
+    switch (subcommand) {
+      case 'stats': {
+        const stats = await store.getStats();
+        const textOut = [
+          `=== GSD-X Global Engineering Heuristics Stats ===`,
+          `Total Heuristics: ${stats.totalHeuristics}`,
+          `Average Confidence: ${(stats.averageConfidence * 100).toFixed(0)}%`,
+          `Categories: ${JSON.stringify(stats.byCategory)}`,
+          `Languages: ${JSON.stringify(stats.byLanguage)}`,
+          `Store Location: ${stats.storePath}`,
+        ].join('\n');
+        output(textOut, raw, stats);
+        break;
+      }
+      case 'list': {
+        const all = await store.getAll();
+        if (raw) {
+          output('', true, all);
+          return;
+        }
+        if (all.length === 0) {
+          output('No heuristics found in global store.', false, []);
+          return;
+        }
+        const textOut = all.map((h) =>
+          `[${h.id}] [${h.category.toUpperCase()}${h.language ? `:${h.language}` : ''}] ${h.title} (${(h.confidence * 100).toFixed(0)}% conf, ${h.sourceProjectsCount} projs)\n  Rule: ${h.recommendation}`
+        ).join('\n\n');
+        output(textOut, false, all);
+        break;
+      }
+      case 'query': {
+        const taskIdx = args.indexOf('--task');
+        const task = taskIdx !== -1 && args[taskIdx + 1] ? args[taskIdx + 1] : '';
+        if (!task) {
+          error('Usage: heuristics query --task <description> [--lang <language>] [--limit <n>]', ERROR_REASON.USAGE);
+          return;
+        }
+        const langIdx = args.indexOf('--lang');
+        const language = langIdx !== -1 && args[langIdx + 1] ? args[langIdx + 1] : undefined;
+        const limitIdx = args.indexOf('--limit');
+        const limit = limitIdx !== -1 && args[limitIdx + 1] ? parseInt(args[limitIdx + 1], 10) : 3;
+
+        const retriever = new HeuristicsRetriever(store);
+        const results = await retriever.retrieve({ task, language, limit });
+        if (raw) {
+          output('', true, results);
+          return;
+        }
+        if (results.length === 0) {
+          output(`No matching engineering heuristics found for task: "${task}"`, false, []);
+          return;
+        }
+        const textOut = results.map((r) =>
+          `[${(r.finalScore * 100).toFixed(0)} pts] ${r.heuristic.title} (${r.heuristic.category})\n  Rule: ${r.heuristic.recommendation}\n  Confidence: ${(r.heuristic.confidence * 100).toFixed(0)}% | Tokens: ~${r.estimatedTokens}`
+        ).join('\n\n');
+        output(textOut, false, results);
+        break;
+      }
+      case 'add': {
+        const titleIdx = args.indexOf('--title');
+        const title = titleIdx !== -1 && args[titleIdx + 1] ? args[titleIdx + 1] : '';
+        const recIdx = args.indexOf('--rec');
+        const recommendation = recIdx !== -1 && args[recIdx + 1] ? args[recIdx + 1] : '';
+        const catIdx = args.indexOf('--cat');
+        const category = catIdx !== -1 && args[catIdx + 1] ? args[catIdx + 1] : 'architecture';
+        const langIdx = args.indexOf('--lang');
+        const language = langIdx !== -1 && args[langIdx + 1] ? args[langIdx + 1] : 'generic';
+        const ratIdx = args.indexOf('--rat');
+        const rationale = ratIdx !== -1 && args[ratIdx + 1] ? args[ratIdx + 1] : 'Observed engineering practice.';
+
+        if (!title || !recommendation) {
+          error('Usage: heuristics add --title <title> --rec <rule> [--cat <category>] [--lang <language>] [--rat <rationale>]', ERROR_REASON.USAGE);
+          return;
+        }
+
+        const res = await store.addOrCorroborate({
+          title,
+          category,
+          language,
+          triggerCondition: `When working with ${language}`,
+          recommendation,
+          rationale,
+        }, cwd);
+
+        if (res.rejectedReason) {
+          error(`Heuristic rejected by privacy guard: ${res.rejectedReason}`, ERROR_REASON.USAGE);
+          return;
+        }
+
+        const msg = res.corroborated
+          ? `Corroborated existing heuristic: [${res.heuristic.id}] "${res.heuristic.title}" (Confidence updated to ${(res.heuristic.confidence * 100).toFixed(0)}%)`
+          : `Added new engineering heuristic: [${res.heuristic.id}] "${res.heuristic.title}" (Confidence: ${(res.heuristic.confidence * 100).toFixed(0)}%)`;
+        output(msg, raw, res);
+        break;
+      }
+      case 'extract': {
+        const fileIdx = args.indexOf('--file') !== -1 ? args.indexOf('--file') : args.indexOf('--summary');
+        const filePath = fileIdx !== -1 && args[fileIdx + 1] ? args[fileIdx + 1] : '';
+        if (!filePath) {
+          error('Usage: heuristics extract --file <path-to-markdown> [--lang <language>]', ERROR_REASON.USAGE);
+          return;
+        }
+        const resolvedPath = path.isAbsolute(filePath) ? filePath : path.resolve(cwd, filePath);
+        if (!fs.existsSync(resolvedPath)) {
+          error(`File not found: ${filePath}`, ERROR_REASON.USAGE);
+          return;
+        }
+        const langIdx = args.indexOf('--lang');
+        const language = langIdx !== -1 && args[langIdx + 1] ? args[langIdx + 1] : 'generic';
+        const content = fs.readFileSync(resolvedPath, 'utf-8');
+        const projectName = path.basename(cwd);
+        const candidates = HeuristicsGeneralizer.extractFromText(content, language, [projectName]);
+        if (candidates.length === 0) {
+          output(`No candidate engineering heuristics found in ${filePath}. (Ensure sections like Decisions, Learnings, or Patterns contain bullet points)`, false, []);
+          return;
+        }
+        let addedCount = 0;
+        let corroboratedCount = 0;
+        let rejectedCount = 0;
+        const results = [];
+        for (const cand of candidates) {
+          const res = await store.addOrCorroborate(cand, cwd, [projectName]);
+          if (res.rejectedReason) {
+            rejectedCount++;
+          } else if (res.corroborated) {
+            corroboratedCount++;
+            results.push(res.heuristic);
+          } else if (res.added) {
+            addedCount++;
+            results.push(res.heuristic);
+          }
+        }
+        const textOut = [
+          `=== Extracted Engineering Heuristics from ${path.basename(filePath)} ===`,
+          `Total Candidates Identified: ${candidates.length}`,
+          `New Heuristics Added: ${addedCount}`,
+          `Existing Corroborated: ${corroboratedCount}`,
+          `Rejected by Privacy Guard: ${rejectedCount}`,
+          '',
+          ...results.map((h) => `• [${h.id}] [${h.category.toUpperCase()}] ${h.title} (${(h.confidence * 100).toFixed(0)}% conf)`),
+        ].join('\n');
+        output(textOut, raw, { candidates: candidates.length, added: addedCount, corroborated: corroboratedCount, rejected: rejectedCount, heuristics: results });
+        break;
+      }
+      case 'feedback': {
+        const idIdx = args.indexOf('--id');
+        const id = idIdx !== -1 && args[idIdx + 1] ? args[idIdx + 1] : '';
+        const success = args.includes('--success') || !args.includes('--failure');
+        if (!id) {
+          error('Usage: heuristics feedback --id <heuristicId> [--success|--failure]', ERROR_REASON.USAGE);
+          return;
+        }
+        const recorder = new HeuristicFeedbackRecorder(store);
+        const res = await recorder.recordOutcome(id, success);
+        if (res.error) {
+          error(res.error, ERROR_REASON.USAGE);
+          return;
+        }
+        const msg = `Recorded ${success ? 'success' : 'failure'} for ${id}. New confidence: ${(res.newConfidence * 100).toFixed(0)}%`;
+        output(msg, raw, res);
+        break;
+      }
+      default:
+        error(`Unknown heuristics subcommand: ${subcommand}. Available: stats, list, query, add, extract, feedback`, ERROR_REASON.USAGE);
+    }
+  } catch (cmdErr) {
+    error(`heuristics error: ${cmdErr && cmdErr.message ? cmdErr.message : String(cmdErr)}`, ERROR_REASON.UNKNOWN);
   }
 }
 
@@ -5023,6 +5397,7 @@ const HOST_COMMAND_ROUTERS = {
     // GSD-X Intelligence & Memory commands
     'memory': routeMemoryCommand,
     'context': routeContextCommand,
+    'ast': routeAstCommand,
     'gsd-memory-search': (ctx) => routeMemoryCommand({ ...ctx, args: ['memory', 'search', ...ctx.args.slice(1)] }),
     'gsd-memory-show': (ctx) => routeMemoryCommand({ ...ctx, args: ['memory', 'show', ...ctx.args.slice(1)] }),
     'gsd-memory-add': (ctx) => routeMemoryCommand({ ...ctx, args: ['memory', 'add', ...ctx.args.slice(1)] }),
@@ -5031,6 +5406,23 @@ const HOST_COMMAND_ROUTERS = {
     'gsd-memory-rebuild': (ctx) => routeMemoryCommand({ ...ctx, args: ['memory', 'rebuild', ...ctx.args.slice(1)] }),
     'gsd-memory-doctor': (ctx) => routeMemoryCommand({ ...ctx, args: ['memory', 'doctor', ...ctx.args.slice(1)] }),
     'gsd-context-stats': (ctx) => routeContextCommand({ ...ctx, args: ['context', 'stats', ...ctx.args.slice(1)] }),
+    'gsd-context-inspect': (ctx) => routeContextCommand({ ...ctx, args: ['context', 'inspect', ...ctx.args.slice(1)] }),
+    'gsd-ast-index': (ctx) => {
+      const isRebuild = ctx.args.includes('--rebuild') || ctx.args.includes('--force');
+      return routeAstCommand({ ...ctx, args: ['ast', isRebuild ? 'rebuild' : 'index', ...ctx.args.slice(1)] });
+    },
+    'gsd-ast-rebuild': (ctx) => routeAstCommand({ ...ctx, args: ['ast', 'rebuild', ...ctx.args.slice(1)] }),
+    'gsd-ast-query': (ctx) => routeAstCommand({ ...ctx, args: ['ast', 'query', ...ctx.args.slice(1)] }),
+    'gsd-ast-relationships': (ctx) => routeAstCommand({ ...ctx, args: ['ast', 'relationships', ...ctx.args.slice(1)] }),
+    'gsd-ast-graph': (ctx) => routeAstCommand({ ...ctx, args: ['ast', 'relationships', ...ctx.args.slice(1)] }),
+    'gsd-ast-stats': (ctx) => routeAstCommand({ ...ctx, args: ['ast', 'stats', ...ctx.args.slice(1)] }),
+    'heuristics': routeHeuristicsCommand,
+    'gsd-heuristics-list': (ctx) => routeHeuristicsCommand({ ...ctx, args: ['heuristics', 'list', ...ctx.args.slice(1)] }),
+    'gsd-heuristics-query': (ctx) => routeHeuristicsCommand({ ...ctx, args: ['heuristics', 'query', ...ctx.args.slice(1)] }),
+    'gsd-heuristics-stats': (ctx) => routeHeuristicsCommand({ ...ctx, args: ['heuristics', 'stats', ...ctx.args.slice(1)] }),
+    'gsd-heuristics-add': (ctx) => routeHeuristicsCommand({ ...ctx, args: ['heuristics', 'add', ...ctx.args.slice(1)] }),
+    'gsd-heuristics-feedback': (ctx) => routeHeuristicsCommand({ ...ctx, args: ['heuristics', 'feedback', ...ctx.args.slice(1)] }),
+    'gsd-heuristics-extract': (ctx) => routeHeuristicsCommand({ ...ctx, args: ['heuristics', 'extract', ...ctx.args.slice(1)] }),
 };
 
 // Returns true when consumed (suppress "Unknown command"), false to fall

@@ -12,6 +12,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const os = require('node:os');
+const { cleanup } = require('./helpers.cjs');
 
 const {
   classifyTaskComplexity,
@@ -57,9 +58,7 @@ describe('GSD-X Context Compiler Engine', () => {
   });
 
   after(() => {
-    try {
-      fs.rmSync(testTmpDir, { recursive: true, force: true });
-    } catch {}
+    cleanup(testTmpDir);
   });
 
   describe('1. Task Complexity & Adaptive Budgeting', () => {
@@ -229,6 +228,54 @@ export class UserService {
       assert.match(stats, /CONTEXT COMPILER OBSERVABILITY/);
       assert.match(stats, /Context Budget:/);
       assert.match(stats, /Planning context:/);
+    });
+
+    test('does not read an indexed source path that escapes the project root', async () => {
+      const outsideRoot = `${testTmpDir}-outside`;
+      fs.mkdirSync(outsideRoot, { recursive: true });
+      const secretPath = path.join(outsideRoot, 'secret.ts');
+      const secret = 'PRIVATE_SENTINEL_OUTSIDE_PROJECT';
+      fs.writeFileSync(secretPath, `export function authenticate() { return '${secret}'; }`);
+      const escapePath = path.relative(testTmpDir, secretPath);
+      const poisonedIndex = {
+        initialize: async () => {},
+        searchSymbols: () => [{
+          name: 'authenticate', kind: 'function', filePath: escapePath,
+          startLine: 1, endLine: 1, signature: 'function authenticate()',
+        }],
+        findCallers: () => [],
+      };
+
+      try {
+        const compiler = new ContextCompiler(testTmpDir, undefined, poisonedIndex);
+        const result = await compiler.compile({ task: 'authenticate', projectDir: testTmpDir });
+        assert.ok(!result.formattedBrief.includes(secret));
+        assert.strictEqual(result.codeContext.length, 0);
+      } finally {
+        cleanup(outsideRoot);
+      }
+    });
+
+    test('refreshes the code index before symbol retrieval', async () => {
+      const calls = [];
+      const index = {
+        updateIndex: async () => { calls.push('update'); },
+        searchSymbols: () => [],
+        findCallers: () => [],
+      };
+      const compiler = new ContextCompiler(testTmpDir, undefined, index);
+      await compiler.compile({ task: 'refresh index', projectDir: testTmpDir });
+      assert.deepStrictEqual(calls, ['update']);
+    });
+
+    test('reports the exact rendered brief token estimate and measured stage durations', async () => {
+      const compiler = new ContextCompiler(testTmpDir);
+      const result = await compiler.compile({ task: 'short task', projectDir: testTmpDir, requestedBudget: 120 });
+      const { estimateTokenCount } = require('../sdk/dist/memory/rerank.js');
+      assert.strictEqual(result.estimatedTokens, estimateTokenCount(result.formattedBrief));
+      assert.ok(result.estimatedTokens <= result.budget || result.record.compilerDecisions.some((d) => d.includes('Required context')));
+      assert.ok(result.record.stages.every((stage) => stage.durationMs >= 0));
+      assert.notDeepStrictEqual(result.record.stages.map((stage) => stage.durationMs), [8, 14, 12, 9, 6]);
     });
   });
 });

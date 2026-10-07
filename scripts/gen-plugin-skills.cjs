@@ -122,7 +122,10 @@ function generateSkills(conversion) {
   const results = [];
   for (const file of files) {
     const stem = file.slice(0, -3);
-    const skillName = PREFIX + stem;
+    // `root.md` is the one unprefixed public front door. Generate it as `$gsd`
+    // for skill-oriented hosts while command-oriented hosts retain their
+    // namespaced `/gsd:root` compatibility entry.
+    const skillName = stem === 'root' ? 'gsd' : PREFIX + stem;
     const src = fs.readFileSync(path.join(COMMANDS_DIR, file), 'utf8');
     let converted = conversion.convertClaudeCommandToClaudeSkill(src, skillName, RUNTIME, cmdNames, true);
     if (BARE_GSD_TOOLS_STEMS.has(stem)) {
@@ -179,7 +182,7 @@ function main() {
       }
     }
     const existingDirs = fs.readdirSync(SKILLS_DIR, { withFileTypes: true })
-      .filter(e => e.isDirectory() && e.name.startsWith(PREFIX));
+      .filter(e => e.isDirectory() && (e.name.startsWith(PREFIX) || e.name === 'gsd'));
     for (const dir of existingDirs) {
       if (!expectedNames.has(dir.name)) {
         process.stderr.write(`gen-plugin-skills: stale (no source) ${path.relative(ROOT, path.join(SKILLS_DIR, dir.name))}\n`);
