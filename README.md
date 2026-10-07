@@ -217,13 +217,85 @@ The projections below linearly scale fixture-derived values (preserving the synt
 
 ---
 
+## Install
+
+```bash
+npm i @udaydeep1992/gsd-x
+# or
+npm i @udaydeep1992/gsd-x@latest
+```
+
+Global installation:
+```bash
+npm i -g @udaydeep1992/gsd-x
+```
+
+Run immediately via npx:
+```bash
+# Interactive installer (prompts for runtime and location)
+npx @udaydeep1992/gsd-x
+```
+
+### Platform-Specific Installation
+
+Install workflows, slash commands, and agent profiles directly for your preferred AI coding environment. Supports both **Global** (user-level config directory) and **Local** (current repository/workspace) scopes:
+
+#### Quick Commands for Popular Platforms
+
+```bash
+# Google Antigravity
+npx @udaydeep1992/gsd-x --antigravity --global   # Global installation
+npx @udaydeep1992/gsd-x --antigravity --local    # Current project only
+
+# Claude Code
+npx @udaydeep1992/gsd-x --claude --global        # Global installation
+npx @udaydeep1992/gsd-x --claude --local         # Current project only
+
+# OpenAI Codex
+npx @udaydeep1992/gsd-x --codex --global         # Global installation
+npx @udaydeep1992/gsd-x --codex --local          # Current project only
+
+# Cursor
+npx @udaydeep1992/gsd-x --cursor --global        # Global installation
+npx @udaydeep1992/gsd-x --cursor --local         # Current project only
+
+# All Supported Runtimes
+npx @udaydeep1992/gsd-x --all --global           # Install across all installed runtimes
+```
+
+#### Supported Runtimes Matrix
+
+| Runtime / Editor | Global Installation (`--global`) | Project-Local Installation (`--local`) |
+|:---|:---|:---|
+| **Google Antigravity** | `npx @udaydeep1992/gsd-x --antigravity --global` | `npx @udaydeep1992/gsd-x --antigravity --local` |
+| **Claude Code** | `npx @udaydeep1992/gsd-x --claude --global` | `npx @udaydeep1992/gsd-x --claude --local` |
+| **OpenAI Codex** | `npx @udaydeep1992/gsd-x --codex --global` | `npx @udaydeep1992/gsd-x --codex --local` |
+| **Cursor** | `npx @udaydeep1992/gsd-x --cursor --global` | `npx @udaydeep1992/gsd-x --cursor --local` |
+| **Windsurf** | `npx @udaydeep1992/gsd-x --windsurf --global` | `npx @udaydeep1992/gsd-x --windsurf --local` |
+| **GitHub Copilot** | `npx @udaydeep1992/gsd-x --copilot --global` | `npx @udaydeep1992/gsd-x --copilot --local` |
+| **Cline** | `npx @udaydeep1992/gsd-x --cline --global` | `npx @udaydeep1992/gsd-x --cline --local` |
+| **OpenCode** | `npx @udaydeep1992/gsd-x --opencode --global` | `npx @udaydeep1992/gsd-x --opencode --local` |
+| **Kimi CLI** | `npx @udaydeep1992/gsd-x --kimi --global` | `npx @udaydeep1992/gsd-x --kimi --local` |
+| **Kimi Code** | `npx @udaydeep1992/gsd-x --kimi-code --global` | `npx @udaydeep1992/gsd-x --kimi-code --local` |
+| **Trae** | `npx @udaydeep1992/gsd-x --trae --global` | `npx @udaydeep1992/gsd-x --trae --local` |
+| **Augment** | `npx @udaydeep1992/gsd-x --augment --global` | `npx @udaydeep1992/gsd-x --augment --local` |
+| **Qwen Code** | `npx @udaydeep1992/gsd-x --qwen --global` | `npx @udaydeep1992/gsd-x --qwen --local` |
+| **Hermes Agent** | `npx @udaydeep1992/gsd-x --hermes --global` | `npx @udaydeep1992/gsd-x --hermes --local` |
+| **CodeBuddy** | `npx @udaydeep1992/gsd-x --codebuddy --global` | `npx @udaydeep1992/gsd-x --codebuddy --local` |
+| **Kilo** | `npx @udaydeep1992/gsd-x --kilo --global` | `npx @udaydeep1992/gsd-x --kilo --local` |
+| **Pi** | `npx @udaydeep1992/gsd-x --pi --global` | `npx @udaydeep1992/gsd-x --pi --local` |
+| **ZCode** | `npx @udaydeep1992/gsd-x --zcode --global` | `npx @udaydeep1992/gsd-x --zcode --local` |
+| **All Runtimes** | `npx @udaydeep1992/gsd-x --all --global` | — |
+
+---
+
 ## Quickstart
 
 ### Choose the next action
 
 Start with `$gsd` (or `/gsd` where the host supports an unprefixed slash entry; `/gsd-root` is the compatible command alias) and describe the outcome you want. With no intent, GSD shows current project state and recommends a next action. The compact categories are `/gsd-build`, `/gsd-plan`, `/gsd-review`, `/gsd-project`, `/gsd-context`, `/gsd-manage`, `/gsd-idea`, and `/gsd-run`. Autonomous execution remains opt-in. Use `/gsd-help advanced` for the full specialist reference; existing specialist commands remain available for direct use.
 
-### Installation
+### Building from Source
 
 ```bash
 # Clone the repository
@@ -239,12 +311,39 @@ npm run build:sdk
 ### Running Tests & Benchmarks
 
 ```bash
-# Run the complete test suite (41/41 passing across 6 subsystems)
+# Run the complete test suite (all tests passing across subsystems)
 npm run test:sdk
 
 # Execute the reproducible token & cost benchmark harness
 npm run benchmark
 ```
+
+### Visual Context Inspector (Loopback Server)
+
+Start the zero-dependency local HTTP loopback server on `127.0.0.1:9876` to inspect context compilation records, token metrics, omission decisions, and semantic diffs in real time:
+
+```bash
+# Start loopback HTTP server on 127.0.0.1:9876
+gsd-tools context inspect --serve --port 9876
+
+# Start server and automatically launch dashboard in default browser
+gsd-tools context inspect --serve --open --port 9876
+
+# Run via npx without global install
+npx @udaydeep1992/gsd-x gsd-tools context inspect --serve --port 9876
+
+# From source repository
+node gsd-core/bin/gsd-tools.cjs context inspect --serve --port 9876
+```
+
+Once running, the loopback server exposes:
+- **Interactive Web Dashboard**: `http://127.0.0.1:9876/`
+- **Latest Compilation Telemetry API**: `http://127.0.0.1:9876/api/latest`
+- **Compilation History API**: `http://127.0.0.1:9876/api/history`
+- **Health Check Endpoint**: `http://127.0.0.1:9876/health`
+
+> [!NOTE]
+> For security, the server binds strictly to the local loopback interface (`127.0.0.1`) and validates the Host header (`isLoopbackHost`) to prevent DNS rebinding attacks.
 
 ### CLI Command Reference
 
@@ -252,25 +351,25 @@ GSD-X integrates seamlessly with the `gsd-tools` CLI:
 
 ```bash
 # Check memory health and audit for secret leaks
-node gsd-x/bin/gsd-tools.cjs memory doctor
+node gsd-core/bin/gsd-tools.cjs memory doctor
 
 # Add an architectural decision to persistent memory
-node gsd-x/bin/gsd-tools.cjs memory add "Use PostgreSQL 16 with UUIDv4 primary keys" --type decision --tags db,postgres
+node gsd-core/bin/gsd-tools.cjs memory add "Use PostgreSQL 16 with UUIDv4 primary keys" --type decision --tags db,postgres
 
 # Semantic vector search across project memory
-node gsd-x/bin/gsd-tools.cjs memory search "database schema decisions" --limit 5
+node gsd-core/bin/gsd-tools.cjs memory search "database schema decisions" --limit 5
 
 # View detailed memory entry
-node gsd-x/bin/gsd-tools.cjs memory show <memory-id>
+node gsd-core/bin/gsd-tools.cjs memory show <memory-id>
 
 # Display memory storage statistics
-node gsd-x/bin/gsd-tools.cjs memory stats
+node gsd-core/bin/gsd-tools.cjs memory stats
 
 # Inspect compiler token budget, omissions, and deduplication savings
-node gsd-x/bin/gsd-tools.cjs context stats --task "Refactor authentication middleware"
+node gsd-core/bin/gsd-tools.cjs context stats --task "Refactor authentication middleware"
 
-# Launch Visual Context Inspector web UI in browser
-node gsd-x/bin/gsd-tools.cjs context inspect --serve --open
+# Launch Visual Context Inspector web UI on 127.0.0.1:9876 in browser
+node gsd-core/bin/gsd-tools.cjs context inspect --serve --open --port 9876
 
 # Dedicated Tree-sitter AST structural code intelligence commands (Rust, Go, C++)
 node gsd-core/bin/gsd-tools.cjs gsd-ast-index [--rebuild]
@@ -279,8 +378,8 @@ node gsd-core/bin/gsd-tools.cjs gsd-ast-query authenticate_user --lang rust
 node gsd-core/bin/gsd-tools.cjs gsd-ast-relationships authenticate_user
 
 # Query and feed back to cross-project engineering heuristics
-node gsd-x/bin/gsd-tools.cjs heuristics query --task "Fix tokio async deadlock"
-node gsd-x/bin/gsd-tools.cjs heuristics feedback --id "heur-rust-tokio-mutex" --success
+node gsd-core/bin/gsd-tools.cjs heuristics query --task "Fix tokio async deadlock"
+node gsd-core/bin/gsd-tools.cjs heuristics feedback --id "heur-rust-tokio-mutex" --success
 ```
 
 ---

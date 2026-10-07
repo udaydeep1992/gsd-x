@@ -209,9 +209,81 @@ Projeções proporcionais mantendo a proporção de 73,8% entrada / 26,2% saída
 
 ---
 
+## Instalação (Install)
+
+```bash
+npm i @udaydeep1992/gsd-x
+# or
+npm i @udaydeep1992/gsd-x@latest
+```
+
+Instalação global (Global installation):
+```bash
+npm i -g @udaydeep1992/gsd-x
+```
+
+Executar imediatamente via npx (Run immediately via npx):
+```bash
+# Instalador interativo (selecione runtime e diretório de destino)
+npx @udaydeep1992/gsd-x
+```
+
+### Instalação por Plataforma (Platform-Specific Installation)
+
+Instale fluxos de trabalho, comandos slash e perfis de agente diretamente para seu ambiente de codificação assistida por IA. Suporta escopo **Global** (diretório de configurações do usuário) e **Local** (projeto/repositório atual):
+
+#### Comandos Rápidos para as Principais Plataformas
+
+```bash
+# Google Antigravity
+npx @udaydeep1992/gsd-x --antigravity --global   # Instalação global
+npx @udaydeep1992/gsd-x --antigravity --local    # Somente no projeto atual
+
+# Claude Code
+npx @udaydeep1992/gsd-x --claude --global        # Instalação global
+npx @udaydeep1992/gsd-x --claude --local         # Somente no projeto atual
+
+# OpenAI Codex
+npx @udaydeep1992/gsd-x --codex --global         # Instalação global
+npx @udaydeep1992/gsd-x --codex --local          # Somente no projeto atual
+
+# Cursor
+npx @udaydeep1992/gsd-x --cursor --global        # Instalação global
+npx @udaydeep1992/gsd-x --cursor --local         # Somente no projeto atual
+
+# Todas as Plataformas Suportadas
+npx @udaydeep1992/gsd-x --all --global           # Instalação em todos os runtimes detectados
+```
+
+#### Matriz de Runtimes Suportados
+
+| Runtime / Editor | Instalação Global (`--global`) | Instalação Local no Projeto (`--local`) |
+|:---|:---|:---|
+| **Google Antigravity** | `npx @udaydeep1992/gsd-x --antigravity --global` | `npx @udaydeep1992/gsd-x --antigravity --local` |
+| **Claude Code** | `npx @udaydeep1992/gsd-x --claude --global` | `npx @udaydeep1992/gsd-x --claude --local` |
+| **OpenAI Codex** | `npx @udaydeep1992/gsd-x --codex --global` | `npx @udaydeep1992/gsd-x --codex --local` |
+| **Cursor** | `npx @udaydeep1992/gsd-x --cursor --global` | `npx @udaydeep1992/gsd-x --cursor --local` |
+| **Windsurf** | `npx @udaydeep1992/gsd-x --windsurf --global` | `npx @udaydeep1992/gsd-x --windsurf --local` |
+| **GitHub Copilot** | `npx @udaydeep1992/gsd-x --copilot --global` | `npx @udaydeep1992/gsd-x --copilot --local` |
+| **Cline** | `npx @udaydeep1992/gsd-x --cline --global` | `npx @udaydeep1992/gsd-x --cline --local` |
+| **OpenCode** | `npx @udaydeep1992/gsd-x --opencode --global` | `npx @udaydeep1992/gsd-x --opencode --local` |
+| **Kimi CLI** | `npx @udaydeep1992/gsd-x --kimi --global` | `npx @udaydeep1992/gsd-x --kimi --local` |
+| **Kimi Code** | `npx @udaydeep1992/gsd-x --kimi-code --global` | `npx @udaydeep1992/gsd-x --kimi-code --local` |
+| **Trae** | `npx @udaydeep1992/gsd-x --trae --global` | `npx @udaydeep1992/gsd-x --trae --local` |
+| **Augment** | `npx @udaydeep1992/gsd-x --augment --global` | `npx @udaydeep1992/gsd-x --augment --local` |
+| **Qwen Code** | `npx @udaydeep1992/gsd-x --qwen --global` | `npx @udaydeep1992/gsd-x --qwen --local` |
+| **Hermes Agent** | `npx @udaydeep1992/gsd-x --hermes --global` | `npx @udaydeep1992/gsd-x --hermes --local` |
+| **CodeBuddy** | `npx @udaydeep1992/gsd-x --codebuddy --global` | `npx @udaydeep1992/gsd-x --codebuddy --local` |
+| **Kilo** | `npx @udaydeep1992/gsd-x --kilo --global` | `npx @udaydeep1992/gsd-x --kilo --local` |
+| **Pi** | `npx @udaydeep1992/gsd-x --pi --global` | `npx @udaydeep1992/gsd-x --pi --local` |
+| **ZCode** | `npx @udaydeep1992/gsd-x --zcode --global` | `npx @udaydeep1992/gsd-x --zcode --local` |
+| **Todos os Runtimes** | `npx @udaydeep1992/gsd-x --all --global` | — |
+
+---
+
 ## Início Rápido
 
-### Instalação e Compilação
+### Compilação a partir do Código-Fonte
 
 ```bash
 # Clonar o repositório
@@ -227,12 +299,39 @@ npm run build:sdk
 ### Execução de Testes e Benchmarks
 
 ```bash
-# Rodar suíte completa de testes (41/41 passando em 6 subsistemas)
+# Rodar suíte completa de testes (todos os testes passando)
 npm run test:sdk
 
 # Executar medição reproduzível de economia de tokens e custos
 npm run benchmark
 ```
+
+### Visual Context Inspector (Servidor Loopback)
+
+Inicie o servidor HTTP loopback local de zero dependências em `127.0.0.1:9876` para inspecionar registros de compilação de contexto, telemetria de tokens, justificativas de omissão e diffs semânticos em tempo real:
+
+```bash
+# Iniciar servidor HTTP loopback em 127.0.0.1:9876
+gsd-tools context inspect --serve --port 9876
+
+# Iniciar servidor e abrir painel visual automaticamente no navegador
+gsd-tools context inspect --serve --open --port 9876
+
+# Executar via npx sem instalação global prévia
+npx @udaydeep1992/gsd-x gsd-tools context inspect --serve --port 9876
+
+# A partir do código-fonte do repositório
+node gsd-core/bin/gsd-tools.cjs context inspect --serve --port 9876
+```
+
+Uma vez em execução, o servidor loopback disponibiliza:
+- **Painel Visual Web Interativo**: `http://127.0.0.1:9876/`
+- **API de Telemetria da Última Compilação**: `http://127.0.0.1:9876/api/latest`
+- **API do Histórico de Compilações**: `http://127.0.0.1:9876/api/history`
+- **Endpoint de Verificação de Saúde (Health Check)**: `http://127.0.0.1:9876/health`
+
+> [!NOTE]
+> Por segurança, o servidor faz bind restrito à interface de loopback local (`127.0.0.1`) e valida os cabeçalhos Host (`isLoopbackHost`) para prevenir ataques de DNS rebinding.
 
 ### Comandos de Linha de Comando (CLI)
 
@@ -256,6 +355,9 @@ node gsd-core/bin/gsd-tools.cjs memory stats
 
 # Inspecionar orçamento de tokens, artefatos omitidos e economia de deduplicação
 node gsd-core/bin/gsd-tools.cjs context stats --task "Refatorar middleware de autenticação"
+
+# Iniciar interface web do Visual Context Inspector em 127.0.0.1:9876 no navegador
+node gsd-core/bin/gsd-tools.cjs context inspect --serve --open --port 9876
 ```
 
 ---

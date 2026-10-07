@@ -203,9 +203,81 @@ GSD-X 大幅减少的是冗余的输入上下文（规则、文档、历史总�
 
 ---
 
+## 安装 (Install)
+
+```bash
+npm i @udaydeep1992/gsd-x
+# or
+npm i @udaydeep1992/gsd-x@latest
+```
+
+全局安装 (Global installation):
+```bash
+npm i -g @udaydeep1992/gsd-x
+```
+
+通过 npx 免安装即时运行 (Run immediately via npx):
+```bash
+# 交互式引导安装（按提示选择目标运行时和安装位置）
+npx @udaydeep1992/gsd-x
+```
+
+### 平台专属安装指引 (Platform-Specific Installation)
+
+直接为您常用的 AI 辅助编程环境安装专用的工作流、斜杠指令（Slash Commands）和 Agent 配置。支持**全局安装**（用户主目录配置）与**项目级安装**（当前仓库目录）：
+
+#### 主流平台快捷命令
+
+```bash
+# Google Antigravity
+npx @udaydeep1992/gsd-x --antigravity --global   # 全局安装
+npx @udaydeep1992/gsd-x --antigravity --local    # 仅当前项目生效
+
+# Claude Code
+npx @udaydeep1992/gsd-x --claude --global        # 全局安装
+npx @udaydeep1992/gsd-x --claude --local         # 仅当前项目生效
+
+# OpenAI Codex
+npx @udaydeep1992/gsd-x --codex --global         # 全局安装
+npx @udaydeep1992/gsd-x --codex --local          # 仅当前项目生效
+
+# Cursor
+npx @udaydeep1992/gsd-x --cursor --global        # 全局安装
+npx @udaydeep1992/gsd-x --cursor --local         # 仅当前项目生效
+
+# 所有已支持的运行时一键安装
+npx @udaydeep1992/gsd-x --all --global           # 为系统检测到的全部运行时批量安装
+```
+
+#### 支持平台一览表
+
+| 运行时 / 编辑器 | 全局安装命令 (`--global`) | 项目级本地安装命令 (`--local`) |
+|:---|:---|:---|
+| **Google Antigravity** | `npx @udaydeep1992/gsd-x --antigravity --global` | `npx @udaydeep1992/gsd-x --antigravity --local` |
+| **Claude Code** | `npx @udaydeep1992/gsd-x --claude --global` | `npx @udaydeep1992/gsd-x --claude --local` |
+| **OpenAI Codex** | `npx @udaydeep1992/gsd-x --codex --global` | `npx @udaydeep1992/gsd-x --codex --local` |
+| **Cursor** | `npx @udaydeep1992/gsd-x --cursor --global` | `npx @udaydeep1992/gsd-x --cursor --local` |
+| **Windsurf** | `npx @udaydeep1992/gsd-x --windsurf --global` | `npx @udaydeep1992/gsd-x --windsurf --local` |
+| **GitHub Copilot** | `npx @udaydeep1992/gsd-x --copilot --global` | `npx @udaydeep1992/gsd-x --copilot --local` |
+| **Cline** | `npx @udaydeep1992/gsd-x --cline --global` | `npx @udaydeep1992/gsd-x --cline --local` |
+| **OpenCode** | `npx @udaydeep1992/gsd-x --opencode --global` | `npx @udaydeep1992/gsd-x --opencode --local` |
+| **Kimi CLI** | `npx @udaydeep1992/gsd-x --kimi --global` | `npx @udaydeep1992/gsd-x --kimi --local` |
+| **Kimi Code** | `npx @udaydeep1992/gsd-x --kimi-code --global` | `npx @udaydeep1992/gsd-x --kimi-code --local` |
+| **Trae** | `npx @udaydeep1992/gsd-x --trae --global` | `npx @udaydeep1992/gsd-x --trae --local` |
+| **Augment** | `npx @udaydeep1992/gsd-x --augment --global` | `npx @udaydeep1992/gsd-x --augment --local` |
+| **Qwen Code** | `npx @udaydeep1992/gsd-x --qwen --global` | `npx @udaydeep1992/gsd-x --qwen --local` |
+| **Hermes Agent** | `npx @udaydeep1992/gsd-x --hermes --global` | `npx @udaydeep1992/gsd-x --hermes --local` |
+| **CodeBuddy** | `npx @udaydeep1992/gsd-x --codebuddy --global` | `npx @udaydeep1992/gsd-x --codebuddy --local` |
+| **Kilo** | `npx @udaydeep1992/gsd-x --kilo --global` | `npx @udaydeep1992/gsd-x --kilo --local` |
+| **Pi** | `npx @udaydeep1992/gsd-x --pi --global` | `npx @udaydeep1992/gsd-x --pi --local` |
+| **ZCode** | `npx @udaydeep1992/gsd-x --zcode --global` | `npx @udaydeep1992/gsd-x --zcode --local` |
+| **全平台一键安装** | `npx @udaydeep1992/gsd-x --all --global` | — |
+
+---
+
 ## 快速上手
 
-### 安装与构建
+### 从源码构建
 
 ```bash
 git clone https://github.com/udaydeep1992/gsd-x.git
@@ -219,14 +291,43 @@ npm run build:sdk
 ### 运行测试与基准验证
 
 ```bash
-# 执行完整测试套件 (41 项测试全部通过)
+# 执行完整测试套件 (所有测试全部通过)
 npm run test:sdk
 
 # 运行自动化 Token 与成本基准评测
 npm run benchmark
 ```
 
+### Visual Context Inspector (环回 HTTP 服务器)
+
+启动零外部依赖的本地 HTTP 环回服务器 (`127.0.0.1:9876`)，以交互式仪表盘实时查看上下文编译记录、Token 消耗统计、文档省略原因和候选内容对比：
+
+```bash
+# 在 127.0.0.1:9876 启动环回 HTTP 服务器
+gsd-tools context inspect --serve --port 9876
+
+# 启动服务器并自动在默认浏览器中打开仪表盘
+gsd-tools context inspect --serve --open --port 9876
+
+# 通过 npx 运行（无需全局安装）
+npx @udaydeep1992/gsd-x gsd-tools context inspect --serve --port 9876
+
+# 直接在源码仓库中运行
+node gsd-core/bin/gsd-tools.cjs context inspect --serve --port 9876
+```
+
+服务器启动后提供以下仪表盘与本地 REST API：
+- **交互式 Web 仪表盘**: `http://127.0.0.1:9876/`
+- **最新编译遥测 API**: `http://127.0.0.1:9876/api/latest`
+- **编译历史记录 API**: `http://127.0.0.1:9876/api/history`
+- **健康检查接口**: `http://127.0.0.1:9876/health`
+
+> [!NOTE]
+> 出于安全性考虑，服务器严格绑定到本地环回地址 (`127.0.0.1`) 并验证 Host 请求头 (`isLoopbackHost`)，杜绝 DNS 重绑定攻击风险。
+
 ### 命令行常用指令
+
+GSD-X 与 `gsd-tools` 命令行深度集成：
 
 ```bash
 # 检查记忆库健康状态与密钥泄露审计
@@ -243,6 +344,9 @@ node gsd-core/bin/gsd-tools.cjs memory show <memory-id>
 
 # 观察当前任务的上下文编译预算、省略项及去重节省
 node gsd-core/bin/gsd-tools.cjs context stats --task "重构身份认证中间件"
+
+# 在 127.0.0.1:9876 启动 Visual Context Inspector 并在浏览器中打开
+node gsd-core/bin/gsd-tools.cjs context inspect --serve --open --port 9876
 ```
 
 ---

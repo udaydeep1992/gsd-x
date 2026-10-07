@@ -209,9 +209,81 @@ GSD-X は冗長な入力コンテキスト（仕様書、マップ、履歴サ�
 
 ---
 
+## インストール (Install)
+
+```bash
+npm i @udaydeep1992/gsd-x
+# or
+npm i @udaydeep1992/gsd-x@latest
+```
+
+グローバルインストール (Global installation):
+```bash
+npm i -g @udaydeep1992/gsd-x
+```
+
+npx で即時実行 (Run immediately via npx):
+```bash
+# 対話型インストーラー（ランタイムと導入先を選択）
+npx @udaydeep1992/gsd-x
+```
+
+### プラットフォーム別インストール手順 (Platform-Specific Installation)
+
+お使いの AI コーディング環境に合わせてワークフロー、スラッシュコマンド、エージェントを直接導入できます。**グローバル導入**（ユーザー設定ディレクトリ）と**ローカル導入**（現在のプロジェクト/ワークスペース）の両方をサポートしています：
+
+#### 主要プラットフォーム向けクイックコマンド
+
+```bash
+# Google Antigravity
+npx @udaydeep1992/gsd-x --antigravity --global   # グローバルインストール
+npx @udaydeep1992/gsd-x --antigravity --local    # 現在のプロジェクトのみ
+
+# Claude Code
+npx @udaydeep1992/gsd-x --claude --global        # グローバルインストール
+npx @udaydeep1992/gsd-x --claude --local         # 現在のプロジェクトのみ
+
+# OpenAI Codex
+npx @udaydeep1992/gsd-x --codex --global         # グローバルインストール
+npx @udaydeep1992/gsd-x --codex --local          # 現在のプロジェクトのみ
+
+# Cursor
+npx @udaydeep1992/gsd-x --cursor --global        # グローバルインストール
+npx @udaydeep1992/gsd-x --cursor --local         # 現在のプロジェクトのみ
+
+# サポート対象の全ランタイム
+npx @udaydeep1992/gsd-x --all --global           # 導入済みの全ランタイムへ一括インストール
+```
+
+#### 対応ランタイム一覧マトリクス
+
+| ランタイム / エディタ | グローバルインストール (`--global`) | プロジェクト個別インストール (`--local`) |
+|:---|:---|:---|
+| **Google Antigravity** | `npx @udaydeep1992/gsd-x --antigravity --global` | `npx @udaydeep1992/gsd-x --antigravity --local` |
+| **Claude Code** | `npx @udaydeep1992/gsd-x --claude --global` | `npx @udaydeep1992/gsd-x --claude --local` |
+| **OpenAI Codex** | `npx @udaydeep1992/gsd-x --codex --global` | `npx @udaydeep1992/gsd-x --codex --local` |
+| **Cursor** | `npx @udaydeep1992/gsd-x --cursor --global` | `npx @udaydeep1992/gsd-x --cursor --local` |
+| **Windsurf** | `npx @udaydeep1992/gsd-x --windsurf --global` | `npx @udaydeep1992/gsd-x --windsurf --local` |
+| **GitHub Copilot** | `npx @udaydeep1992/gsd-x --copilot --global` | `npx @udaydeep1992/gsd-x --copilot --local` |
+| **Cline** | `npx @udaydeep1992/gsd-x --cline --global` | `npx @udaydeep1992/gsd-x --cline --local` |
+| **OpenCode** | `npx @udaydeep1992/gsd-x --opencode --global` | `npx @udaydeep1992/gsd-x --opencode --local` |
+| **Kimi CLI** | `npx @udaydeep1992/gsd-x --kimi --global` | `npx @udaydeep1992/gsd-x --kimi --local` |
+| **Kimi Code** | `npx @udaydeep1992/gsd-x --kimi-code --global` | `npx @udaydeep1992/gsd-x --kimi-code --local` |
+| **Trae** | `npx @udaydeep1992/gsd-x --trae --global` | `npx @udaydeep1992/gsd-x --trae --local` |
+| **Augment** | `npx @udaydeep1992/gsd-x --augment --global` | `npx @udaydeep1992/gsd-x --augment --local` |
+| **Qwen Code** | `npx @udaydeep1992/gsd-x --qwen --global` | `npx @udaydeep1992/gsd-x --qwen --local` |
+| **Hermes Agent** | `npx @udaydeep1992/gsd-x --hermes --global` | `npx @udaydeep1992/gsd-x --hermes --local` |
+| **CodeBuddy** | `npx @udaydeep1992/gsd-x --codebuddy --global` | `npx @udaydeep1992/gsd-x --codebuddy --local` |
+| **Kilo** | `npx @udaydeep1992/gsd-x --kilo --global` | `npx @udaydeep1992/gsd-x --kilo --local` |
+| **Pi** | `npx @udaydeep1992/gsd-x --pi --global` | `npx @udaydeep1992/gsd-x --pi --local` |
+| **ZCode** | `npx @udaydeep1992/gsd-x --zcode --global` | `npx @udaydeep1992/gsd-x --zcode --local` |
+| **全ランタイム一括** | `npx @udaydeep1992/gsd-x --all --global` | — |
+
+---
+
 ## クイックスタート
 
-### インストールとビルド
+### ソースコードからのビルド
 
 ```bash
 # リポジトリのクローン
@@ -227,12 +299,39 @@ npm run build:sdk
 ### テストとベンチマークの実行
 
 ```bash
-# 完全なテストスイートを実行 (6つのサブシステムすべてで 41/41 通過)
+# 完全なテストスイートを実行 (全テスト通過)
 npm run test:sdk
 
 # 再現可能なトークン & コスト削減ベンチマークを実行
 npm run benchmark
 ```
+
+### Visual Context Inspector (ループバックサーバー)
+
+`127.0.0.1:9876` でゼロ依存のローカル HTTP ループバックサーバーを起動し、コンテキストコンパイル記録、トークン推移、省略理由、差分（diff）をリアルタイムに視覚的確認できます：
+
+```bash
+# 127.0.0.1:9876 でループバック HTTP サーバーを起動
+gsd-tools context inspect --serve --port 9876
+
+# サーバーを起動し、既定のブラウザでダッシュボードを自動的に開く
+gsd-tools context inspect --serve --open --port 9876
+
+# グローバルインストールせずに npx で実行
+npx @udaydeep1992/gsd-x gsd-tools context inspect --serve --port 9876
+
+# ソースコードから直接実行
+node gsd-core/bin/gsd-tools.cjs context inspect --serve --port 9876
+```
+
+起動後、以下のダッシュボードおよびローカル API にアクセス可能です：
+- **対話型 Web ダッシュボード**: `http://127.0.0.1:9876/`
+- **最新コンパイルテレメトリ API**: `http://127.0.0.1:9876/api/latest`
+- **コンパイル履歴 API**: `http://127.0.0.1:9876/api/history`
+- **ヘルスチェックエンドポイント**: `http://127.0.0.1:9876/health`
+
+> [!NOTE]
+> セキュリティ保護のため、サーバーはローカルループバックインターフェース（`127.0.0.1`）にのみバインドし、Host ヘッダー検証（`isLoopbackHost`）により DNS リバインディング攻撃を遮断します。
 
 ### CLI コマンドリファレンス
 
@@ -256,6 +355,9 @@ node gsd-core/bin/gsd-tools.cjs memory stats
 
 # コンパイラのトークンバジェット、省略された文書、重複排除の削減効果を診断
 node gsd-core/bin/gsd-tools.cjs context stats --task "認証ミドルウェアのリファクタリング"
+
+# Visual Context Inspector Web UI を 127.0.0.1:9876 でブラウザ起動
+node gsd-core/bin/gsd-tools.cjs context inspect --serve --open --port 9876
 ```
 
 ---
